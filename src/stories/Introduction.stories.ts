@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components';
 import { html } from 'lit';
 
 const meta: Meta = {
-  title: 'Design System/Introduction',
+  title: 'Introduction',
   component: 'div', // Use div as the component for documentation stories
   parameters: {
     layout: 'fullscreen',

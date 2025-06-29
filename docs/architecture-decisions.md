@@ -105,6 +105,12 @@ const iconModule = await import(`@tabler/icons/icons/outline/${iconName}.svg?raw
 **Context**: Standardize icon integration across components
 **Decision**: Comprehensive icon usage patterns and guidelines
 
+**Atomic Design Classification**: Icons are **Foundation-level Atoms**
+- **Rationale**: Icons are fundamental building blocks that cannot be broken down further
+- **Usage**: Standalone visual primitives used throughout molecules and organisms
+- **Storybook Location**: `Foundation/Icons`
+- **Component Hierarchy**: Atoms → Molecules (Button, Blueprint) → Organisms (Alert, Notification)
+
 **Integration Patterns**:
 1. **Direct Icon Usage**: `<dive-icon name="check" size="medium" color="primary">`
 2. **Component Integration**: Blueprint component uses `<dive-icon>` for consistency
@@ -237,11 +243,118 @@ Examples:
 | 005 | Icon Usage Guidelines | ✅ Accepted | Standardized icon patterns |
 | 006 | CSS Variable Pipeline | ✅ Accepted | Enterprise-grade token system |
 | 007 | Typography System | ✅ Accepted | Accessible font foundation |
-| 008 | Deployment Strategy | ✅ Accepted | Netlify hosting with optimization |
+| 008 | Atomic Design Architecture | ✅ Accepted | Component hierarchy and organization |
+| 009 | Deployment Strategy | ✅ Accepted | Netlify hosting with optimization |
 
 ---
 
-## ADR-008: Deployment Strategy with Netlify
+## ADR-008: Atomic Design Component Architecture
+
+**Date**: 2025-01-15
+**Status**: Accepted
+**Context**: Need clear component hierarchy and organization strategy for design system scalability
+**Decision**: Implement strict Atomic Design methodology with three-tier component architecture
+
+**Atomic Design Structure**:
+
+### **Foundation (Atoms)**
+- **Icons** (`<dive-icon>`) - Individual SVG graphics
+- **Typography** - Font definitions and text styling  
+- **Design Tokens** - CSS variables for colors, spacing, borders
+- **Token Pipeline** - Build system and token architecture
+
+**Characteristics**:
+- Cannot be broken down further
+- Serve as building blocks for molecules
+- No complex interactions or business logic
+- Highly reusable across the system
+
+### **Molecules** 
+- **Blueprint** (`<dive-blueprint>`) - Button-like interactive element
+- **Planned**: Button, Label, Chip, Input, Badge
+- **Definition**: Basic interactive components combining 2-3 atoms
+
+**Characteristics**:
+- Combine multiple atoms (icon + text + styling)
+- Single responsibility and focused functionality  
+- Reusable across different organisms
+- Limited complexity and configuration options
+
+### **Organisms**
+- **Planned**: Alert, Notification, Card, Modal, Navigation, Header
+- **Definition**: Complex components combining multiple molecules and atoms
+
+**Characteristics**:
+- Complex functionality and business logic
+- Multiple interaction states and behaviors
+- Combine several molecules to create meaningful interfaces
+- Context-specific and may have specialized use cases
+
+**Storybook Organization**:
+```
+📁 Introduction
+📁 Foundation/
+   ├── 🎨 Design Tokens
+   ├── 📝 Typography  
+   ├── 🔧 Token Pipeline
+   └── 🎯 Icons
+📁 Molecules/
+   ├── 🧩 Blueprint
+   ├── 🔲 Button (planned)
+   ├── 🏷️ Label (planned)
+   └── 🎫 Chip (planned)
+📁 Organisms/
+   ├── 🚨 Alert (planned)
+   ├── 🔔 Notification (planned)
+   └── 🃏 Card (planned)
+```
+
+**Implementation Guidelines**:
+
+1. **Atoms → Molecules**: Always use foundation atoms in molecule components
+   ```typescript
+   // ✅ Good: Molecule using atoms
+   <dive-icon name="check" color="primary"></dive-icon>
+   <span style="color: var(--Color-Primary-Foreground-default)">Save</span>
+   ```
+
+2. **Molecules → Organisms**: Combine molecules for complex functionality
+   ```typescript
+   // ✅ Good: Organism using molecules  
+   <dive-button variant="primary">
+   <dive-badge count="3">
+   <dive-alert type="success">
+   ```
+
+3. **Avoid Atom → Organism**: Don't skip the molecule layer
+   ```typescript
+   // ❌ Bad: Direct atom usage in complex organism
+   <complex-form>
+     <dive-icon name="user">  <!-- Should use input molecule instead -->
+   ```
+
+**Rationale**:
+- **Scalability**: Clear hierarchy enables systematic component growth
+- **Consistency**: Atoms ensure visual and behavioral consistency across molecules/organisms  
+- **Maintainability**: Changes to atoms automatically propagate up the hierarchy
+- **Developer Experience**: Predictable component architecture reduces learning curve
+- **Design System Integrity**: Enforces design token usage and prevents style drift
+
+**Component Development Process**:
+1. **Identify Level**: Determine if new component is molecule or organism
+2. **Dependency Mapping**: List required atoms/molecules as dependencies
+3. **Token Integration**: Use design tokens exclusively, no hardcoded values
+4. **Story Creation**: Document in appropriate Storybook section
+5. **Testing**: Verify component works in isolation and composition
+
+**Migration Strategy**:
+- **Current**: Blueprint moved from "Components" to "Molecules" 
+- **Future**: New components categorized during development planning
+- **Documentation**: Update ADRs when component hierarchy decisions are made
+
+---
+
+## ADR-009: Deployment Strategy with Netlify
 
 **Date**: 2025-01-15
 **Status**: Accepted

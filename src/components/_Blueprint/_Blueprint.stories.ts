@@ -13,7 +13,7 @@ if (!customElements.get('dive-blueprint')) {
 }
 
 const meta: Meta<DiveBlueprint> = {
-  title: 'Design System/Foundation/Blueprint',
+  title: 'Molecules/Blueprint',
   component: 'dive-blueprint',
   parameters: {
     layout: 'centered',

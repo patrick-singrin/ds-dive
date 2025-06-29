@@ -13,7 +13,7 @@ if (!customElements.get('dive-icon')) {
 }
 
 const meta: Meta<DiveIcon> = {
-  title: 'Design System/Components/Icon',
+  title: 'Foundation/Icons',
   component: 'dive-icon',
   parameters: {
     layout: 'centered',

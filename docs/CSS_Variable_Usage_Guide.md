@@ -153,7 +153,9 @@ The design system provides **6 official color categories**:
 
 ## Component Implementation Patterns
 
-### 1. Button Component Example
+> **Note**: The following examples show molecule-level components that combine foundation atoms (colors, typography, spacing) into interactive elements.
+
+### 1. Button Molecule Example
 
 ```css
 .button {
@@ -212,7 +214,7 @@ The design system provides **6 official color categories**:
 }
 ```
 
-### 2. Input Component Example
+### 2. Input Molecule Example
 
 ```css
 .input {
@@ -249,7 +251,7 @@ The design system provides **6 official color categories**:
 }
 ```
 
-### 3. Card Component Example
+### 3. Card Organism Example
 
 ```css
 .card {

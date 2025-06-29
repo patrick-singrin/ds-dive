@@ -459,11 +459,20 @@ injectAllTokenCssVars('dark-mode');
 injectAllTokenCssVars('hc-light-mode');
 ```
 
-## Component Library
+## Atomic Design Structure
 
-### Available Components
-- **Icon** (`<dive-icon>`) - Tabler icon system with 15+ icons
-- **Blueprint** (`<dive-blueprint>`) - Reference implementation showing all patterns
+### Foundation (Atoms)
+- **Icons** (`<dive-icon>`) - Tabler icon system with 15+ icons
+- **Typography** - Atkinson Hyperlegible Next font system
+- **Design Tokens** - CSS variables for colors, spacing, borders
+- **Token Pipeline** - Advanced W3C-compliant token architecture
+
+### Molecules
+- **Blueprint** (`<dive-blueprint>`) - Button-like element combining icon + text + styling atoms
+- **Planned**: Button, Label, Chip - basic interactive elements
+
+### Organisms  
+- **Planned**: Alert, Notification, Card, Modal - complex components combining molecules
 
 ### Component Features
 - ✅ **CSS Variable Integration** - All components use design tokens

@@ -5,7 +5,7 @@ import { html } from 'lit';
 const TokensDocumentation = () => html`<div></div>`;
 
 const meta: Meta = {
-  title: 'Design System/Tokens/Overview',
+  title: 'Foundation/Design Tokens',
   component: 'div', // Use div as the component for documentation stories
   parameters: {
     layout: 'fullscreen',
