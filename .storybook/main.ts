@@ -35,10 +35,8 @@ const config: StorybookConfig = {
     defaultName: 'Documentation'
   },
   features: {
-    buildStoriesJson: true,
     storyStoreV7: true
   },
-  staticDirs: ['../public'],
   viteFinal: async (config) => {
     // Optimize for development performance
     if (config.mode === 'development') {
