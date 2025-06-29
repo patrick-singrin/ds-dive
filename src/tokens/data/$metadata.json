@@ -1,0 +1,11 @@
+{
+  "tokenSetOrder": [
+    "brand-theme/dive-theme",
+    "color-modes/light-mode",
+    "color-modes/hc-light-mode",
+    "color-modes/dark-mode",
+    "color-modes/hc-dark-mode",
+    "components/component",
+    "layouts/layout"
+  ]
+}

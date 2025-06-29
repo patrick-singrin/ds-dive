@@ -1,0 +1,312 @@
+{
+  "Base": {
+    "0": {
+      "$type": "color",
+      "$value": "{Color.Base.1000}"
+    },
+    "50": {
+      "$type": "color",
+      "$value": "{Color.Base.1000}"
+    },
+    "100": {
+      "$type": "color",
+      "$value": "{Color.Base.900}"
+    },
+    "200": {
+      "$type": "color",
+      "$value": "{Color.Base.600}"
+    },
+    "300": {
+      "$type": "color",
+      "$value": "{Color.Base.600}"
+    },
+    "400": {
+      "$type": "color",
+      "$value": "{Color.Base.600}"
+    },
+    "500": {
+      "$type": "color",
+      "$value": "{Color.Base.0}"
+    },
+    "600": {
+      "$type": "color",
+      "$value": "{Color.Base.1000}"
+    },
+    "700": {
+      "$type": "color",
+      "$value": "{Color.Base.600}"
+    },
+    "800": {
+      "$type": "color",
+      "$value": "{Color.Base.0}"
+    },
+    "900": {
+      "$type": "color",
+      "$value": "{Color.Base.0}"
+    },
+    "950": {
+      "$type": "color",
+      "$value": "{Color.Base.0}"
+    }
+  },
+  "Primary": {
+    "0": {
+      "$type": "color",
+      "$value": "{Color.Primary.0}"
+    },
+    "50": {
+      "$type": "color",
+      "$value": "{Color.Primary.1000}"
+    },
+    "100": {
+      "$type": "color",
+      "$value": "{Color.Primary.900}"
+    },
+    "200": {
+      "$type": "color",
+      "$value": "{Color.Primary.900}"
+    },
+    "300": {
+      "$type": "color",
+      "$value": "{Color.Primary.600}"
+    },
+    "400": {
+      "$type": "color",
+      "$value": "{Color.Primary.600}"
+    },
+    "500": {
+      "$type": "color",
+      "$value": "{Color.Primary.600}"
+    },
+    "600": {
+      "$type": "color",
+      "$value": "{Color.Primary.600}"
+    },
+    "700": {
+      "$type": "color",
+      "$value": "{Color.Primary.0}"
+    },
+    "800": {
+      "$type": "color",
+      "$value": "{Color.Primary.0}"
+    },
+    "900": {
+      "$type": "color",
+      "$value": "{Color.Primary.0}"
+    },
+    "950": {
+      "$type": "color",
+      "$value": "{Color.Primary.0}"
+    }
+  },
+  "Success": {
+    "0": {
+      "$type": "color",
+      "$value": "{Color.Success.0}"
+    },
+    "50": {
+      "$type": "color",
+      "$value": "{Color.Success.1000}"
+    },
+    "100": {
+      "$type": "color",
+      "$value": "{Color.Success.900}"
+    },
+    "200": {
+      "$type": "color",
+      "$value": "{Color.Success.900}"
+    },
+    "300": {
+      "$type": "color",
+      "$value": "{Color.Success.600}"
+    },
+    "400": {
+      "$type": "color",
+      "$value": "{Color.Success.600}"
+    },
+    "500": {
+      "$type": "color",
+      "$value": "{Color.Success.600}"
+    },
+    "600": {
+      "$type": "color",
+      "$value": "{Color.Success.600}"
+    },
+    "700": {
+      "$type": "color",
+      "$value": "{Color.Success.0}"
+    },
+    "800": {
+      "$type": "color",
+      "$value": "{Color.Success.0}"
+    },
+    "900": {
+      "$type": "color",
+      "$value": "{Color.Success.0}"
+    },
+    "950": {
+      "$type": "color",
+      "$value": "{Color.Success.0}"
+    }
+  },
+  "Warning": {
+    "0": {
+      "$type": "color",
+      "$value": "{Color.Warning.0}"
+    },
+    "50": {
+      "$type": "color",
+      "$value": "{Color.Warning.1000}"
+    },
+    "100": {
+      "$type": "color",
+      "$value": "{Color.Warning.900}"
+    },
+    "200": {
+      "$type": "color",
+      "$value": "{Color.Warning.900}"
+    },
+    "300": {
+      "$type": "color",
+      "$value": "{Color.Warning.600}"
+    },
+    "400": {
+      "$type": "color",
+      "$value": "{Color.Warning.600}"
+    },
+    "500": {
+      "$type": "color",
+      "$value": "{Color.Warning.600}"
+    },
+    "600": {
+      "$type": "color",
+      "$value": "{Color.Warning.600}"
+    },
+    "700": {
+      "$type": "color",
+      "$value": "{Color.Warning.0}"
+    },
+    "800": {
+      "$type": "color",
+      "$value": "{Color.Warning.0}"
+    },
+    "900": {
+      "$type": "color",
+      "$value": "{Color.Warning.0}"
+    },
+    "950": {
+      "$type": "color",
+      "$value": "{Color.Warning.0}"
+    }
+  },
+  "Error": {
+    "0": {
+      "$type": "color",
+      "$value": "{Color.Error.0}"
+    },
+    "50": {
+      "$type": "color",
+      "$value": "{Color.Error.1000}"
+    },
+    "100": {
+      "$type": "color",
+      "$value": "{Color.Error.900}"
+    },
+    "200": {
+      "$type": "color",
+      "$value": "{Color.Error.900}"
+    },
+    "300": {
+      "$type": "color",
+      "$value": "{Color.Error.600}"
+    },
+    "400": {
+      "$type": "color",
+      "$value": "{Color.Error.600}"
+    },
+    "500": {
+      "$type": "color",
+      "$value": "{Color.Error.600}"
+    },
+    "600": {
+      "$type": "color",
+      "$value": "{Color.Error.600}"
+    },
+    "700": {
+      "$type": "color",
+      "$value": "{Color.Error.0}"
+    },
+    "800": {
+      "$type": "color",
+      "$value": "{Color.Error.0}"
+    },
+    "900": {
+      "$type": "color",
+      "$value": "{Color.Error.0}"
+    },
+    "950": {
+      "$type": "color",
+      "$value": "{Color.Error.0}"
+    }
+  },
+  "Info": {
+    "0": {
+      "$type": "color",
+      "$value": "{Color.Info.0}"
+    },
+    "50": {
+      "$type": "color",
+      "$value": "{Color.Info.1000}"
+    },
+    "100": {
+      "$type": "color",
+      "$value": "{Color.Info.900}"
+    },
+    "200": {
+      "$type": "color",
+      "$value": "{Color.Info.900}"
+    },
+    "300": {
+      "$type": "color",
+      "$value": "{Color.Primary.600}"
+    },
+    "400": {
+      "$type": "color",
+      "$value": "{Color.Info.600}"
+    },
+    "500": {
+      "$type": "color",
+      "$value": "{Color.Info.600}"
+    },
+    "600": {
+      "$type": "color",
+      "$value": "{Color.Info.600}"
+    },
+    "700": {
+      "$type": "color",
+      "$value": "{Color.Info.0}"
+    },
+    "800": {
+      "$type": "color",
+      "$value": "{Color.Info.0}"
+    },
+    "900": {
+      "$type": "color",
+      "$value": "{Color.Info.0}"
+    },
+    "950": {
+      "$type": "color",
+      "$value": "{Color.Info.0}"
+    }
+  },
+  "Functional": {
+    "elevation-1": {
+      "$type": "color",
+      "$value": "#ffffff00"
+    },
+    "barrier": {
+      "$type": "color",
+      "$value": "#000000e0"
+    }
+  }
+}

@@ -1,0 +1,112 @@
+/**
+ * Global Styles for Dive Design System
+ * 
+ * Sets default typography and base styles using Atkinson Hyperlegible Next font
+ */
+
+/* Base HTML elements */
+html {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-regular);
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+  color: var(--Color-Base-Foreground-default);
+  background-color: var(--Color-Base-Background-default);
+}
+
+/* Typography scale */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-semi-bold);
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.25rem; /* 36px */
+  font-weight: var(--font-weight-bold);
+}
+
+h2 {
+  font-size: 1.875rem; /* 30px */
+  font-weight: var(--font-weight-semi-bold);
+}
+
+h3 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: var(--font-weight-semi-bold);
+}
+
+h4 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: var(--font-weight-medium);
+}
+
+h5 {
+  font-size: 1.125rem; /* 18px */
+  font-weight: var(--font-weight-medium);
+}
+
+h6 {
+  font-size: 1rem; /* 16px */
+  font-weight: var(--font-weight-medium);
+}
+
+/* Body text */
+p, div, span {
+  font-family: var(--font-family-primary);
+}
+
+/* Code and monospace */
+code, pre, kbd, samp {
+  font-family: var(--font-family-mono);
+}
+
+/* Form elements */
+input, textarea, select, button {
+  font-family: var(--font-family-primary);
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--Color-Focus-focus);
+  outline-offset: 2px;
+}
+
+/* Storybook specific styles */
+.sbdocs-content {
+  font-family: var(--font-family-primary) !important;
+}
+
+.sbdocs-h1, .sbdocs-h2, .sbdocs-h3, .sbdocs-h4, .sbdocs-h5, .sbdocs-h6 {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    font-weight: var(--font-weight-medium);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--font-weight-bold);
+  }
+}
+ 

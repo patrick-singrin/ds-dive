@@ -1,0 +1,268 @@
+{
+  "Color": {
+    "Background": {
+      "body": {
+        "$type": "color",
+        "$value": "{Base.50}"
+      },
+      "subtle": {
+        "$type": "color",
+        "$value": "{Base.100}"
+      },
+      "primary-subtle": {
+        "$type": "color",
+        "$value": "{Color.Primary.Subtle Background.default}"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{Color.Primary.Primary Background.default}"
+      },
+      "success-subtle": {
+        "$type": "color",
+        "$value": "{Color.Success.Subtle Background.default}"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "{Color.Success.Primary Background.default}"
+      },
+      "warning-subtle": {
+        "$type": "color",
+        "$value": "{Color.Warning.Subtle Background.default}"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "{Color.Warning.Primary Background.default}"
+      },
+      "base-subtle": {
+        "$type": "color",
+        "$value": "{Color.Base.Subtle Background.default}"
+      },
+      "base": {
+        "$type": "color",
+        "$value": "{Color.Base.Primary Background.default}"
+      },
+      "error-subtle": {
+        "$type": "color",
+        "$value": "{Color.Error.Subtle Background.default}"
+      },
+      "error": {
+        "$type": "color",
+        "$value": "{Color.Error.Primary Background.default}"
+      },
+      "info-subtle": {
+        "$type": "color",
+        "$value": "{Color.Info.Subtle Background.default}"
+      },
+      "info": {
+        "$type": "color",
+        "$value": "{Color.Info.Primary Background.default}"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "{Base.300}"
+      }
+    },
+    "Border": {
+      "default": {
+        "$type": "color",
+        "$value": "{Color.Base.Border.default}"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{Color.Primary.Border.default}"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "{Color.Success.Border.default}"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "{Color.Warning.Border.default}"
+      },
+      "error": {
+        "$type": "color",
+        "$value": "{Color.Error.Border.default}"
+      }
+    },
+    "Text": {
+      "default": {
+        "$type": "color",
+        "$value": "{Color.Base.Foreground.default}"
+      },
+      "subtle": {
+        "$type": "color",
+        "$value": "{Color.Base.Subtle Foreground.default}"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "{Color.Base.Foreground.disabled}"
+      },
+      "on base": {
+        "$type": "color",
+        "$value": "{Color.Base.Primary Foreground.default}"
+      },
+      "on base -subtle": {
+        "$type": "color",
+        "$value": "{Color.Base.Foreground.default}"
+      },
+      "on primary-subtle": {
+        "$type": "color",
+        "$value": "{Color.Primary.Foreground.default}"
+      },
+      "on primary": {
+        "$type": "color",
+        "$value": "{Color.Primary.Primary Foreground.default}"
+      },
+      "on success-subtle": {
+        "$type": "color",
+        "$value": "{Color.Success.Foreground.default}"
+      },
+      "on success": {
+        "$type": "color",
+        "$value": "{Color.Success.Primary Foreground.default}"
+      },
+      "on warning-subtle": {
+        "$type": "color",
+        "$value": "{Color.Warning.Foreground.default}"
+      },
+      "on warning": {
+        "$type": "color",
+        "$value": "{Color.Warning.Primary Foreground.default}"
+      },
+      "on error": {
+        "$type": "color",
+        "$value": "{Color.Error.Primary Foreground.default}"
+      },
+      "on error-subtle": {
+        "$type": "color",
+        "$value": "{Color.Error.Foreground.default}"
+      },
+      "on info-subtle": {
+        "$type": "color",
+        "$value": "{Color.Info.Foreground.default}"
+      },
+      "on info": {
+        "$type": "color",
+        "$value": "{Color.Info.Primary Foreground.default}"
+      }
+    },
+    "Functional": {
+      "barrier": {
+        "$type": "color",
+        "$value": "{Functional.barrier}"
+      }
+    }
+  },
+  "Spacing": {
+    "0": {
+      "$type": "number",
+      "$value": "{Space.0}"
+    },
+    "1": {
+      "$type": "number",
+      "$value": "{Space.6}"
+    },
+    "2": {
+      "$type": "number",
+      "$value": "{Space.8}"
+    },
+    "3": {
+      "$type": "number",
+      "$value": "{Space.10}"
+    },
+    "4": {
+      "$type": "number",
+      "$value": "{Space.11}"
+    },
+    "5": {
+      "$type": "number",
+      "$value": "{Space.12}"
+    },
+    "6": {
+      "$type": "number",
+      "$value": "{Space.13}"
+    },
+    "7": {
+      "$type": "number",
+      "$value": "{Space.14}"
+    },
+    "8": {
+      "$type": "number",
+      "$value": "{Space.15}"
+    },
+    "9": {
+      "$type": "number",
+      "$value": "{Space.16}"
+    },
+    "10": {
+      "$type": "number",
+      "$value": "{Space.17}"
+    },
+    "11": {
+      "$type": "number",
+      "$value": "{Space.18}"
+    },
+    "12": {
+      "$type": "number",
+      "$value": "{Space.19}"
+    }
+  },
+  "Border": {
+    "border-width": {
+      "none": {
+        "$type": "number",
+        "$value": 0
+      },
+      "selected": {
+        "$type": "number",
+        "$value": 3
+      },
+      "active": {
+        "$type": "number",
+        "$value": 2
+      },
+      "disabled": {
+        "$type": "number",
+        "$value": 1
+      },
+      "hover": {
+        "$type": "number",
+        "$value": 2
+      },
+      "default": {
+        "$type": "number",
+        "$value": 1
+      }
+    },
+    "border-radius": {
+      "full": {
+        "$type": "number",
+        "$value": "{Space.full}"
+      },
+      "xl": {
+        "$type": "number",
+        "$value": "{Space.10}"
+      },
+      "lg": {
+        "$type": "number",
+        "$value": "{Space.6}"
+      },
+      "md": {
+        "$type": "number",
+        "$value": "{Space.3}"
+      },
+      "sm": {
+        "$type": "number",
+        "$value": "{Space.2}"
+      },
+      "none": {
+        "$type": "number",
+        "$value": "{Space.0}"
+      },
+      "md focus": {
+        "$type": "number",
+        "$value": "{Space.5}"
+      }
+    }
+  }
+}
