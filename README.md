@@ -169,14 +169,11 @@ Override CSS custom properties to create custom themes:
 # Install dependencies
 npm install
 
-# Start development server
-npm run dev
+# Build design tokens
+npm run build:tokens
 
 # Start Storybook
 npm run storybook
-
-# Build tokens
-npm run tokens:build
 
 # Run tests
 npm test
@@ -184,6 +181,25 @@ npm test
 # Build for production
 npm run build
 ```
+
+## 🚀 Deployment
+
+### Netlify (Recommended)
+Automatic deployment configured via `netlify.toml`:
+
+1. **Connect repository** to Netlify
+2. **Auto-detected settings**: Build command and publish directory
+3. **Deploy**: Automatic on push to main branch
+
+**Build Configuration**:
+- **Command**: `npm run build` (builds Storybook)
+- **Directory**: `storybook-static`
+- **Node Version**: 18 (stable)
+
+### Other Platforms
+- **Vercel**: `npm run build` → deploy `storybook-static/`
+- **GitHub Pages**: Use Actions to build and deploy
+- **Static Hosting**: Upload `storybook-static/` contents
 
 ### Adding New Components
 1. Create component directory in `src/components/YourComponent/`

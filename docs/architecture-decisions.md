@@ -237,6 +237,56 @@ Examples:
 | 005 | Icon Usage Guidelines | ✅ Accepted | Standardized icon patterns |
 | 006 | CSS Variable Pipeline | ✅ Accepted | Enterprise-grade token system |
 | 007 | Typography System | ✅ Accepted | Accessible font foundation |
+| 008 | Deployment Strategy | ✅ Accepted | Netlify hosting with optimization |
+
+---
+
+## ADR-008: Deployment Strategy with Netlify
+
+**Date**: 2025-01-15
+**Status**: Accepted
+**Context**: Need reliable deployment platform for Storybook documentation site
+**Decision**: Use Netlify for primary deployment with static site hosting
+
+**Implementation**:
+- **Platform**: Netlify for automatic deployment
+- **Build Process**: Storybook static site generation
+- **Configuration**: `netlify.toml` for build settings and optimization
+- **Output**: `storybook-static/` directory with complete documentation site
+
+**Configuration Details**:
+```toml
+[build]
+  command = "npm run build"
+  publish = "storybook-static"
+
+[build.environment]
+  NODE_VERSION = "18"
+```
+
+**Rationale**:
+- **Zero Configuration**: Automatic detection of build settings
+- **Performance**: Global CDN with optimal caching headers
+- **Developer Experience**: Preview deployments for pull requests
+- **Reliability**: Enterprise-grade hosting with 99.9% uptime
+- **Integration**: Seamless GitHub integration
+
+**Security Headers**:
+- Content Security Policy optimization
+- XSS protection and frame options
+- Optimal caching for static assets (fonts, CSS, JS)
+
+**Consequences**:
+- **Positive**: Fast deployment, excellent performance, preview builds
+- **Negative**: Vendor lock-in, potential costs for high usage
+- **Mitigation**: Build output works on any static hosting platform
+
+**Alternative Platforms Considered**:
+- **Vercel**: Similar features, chose Netlify for better Storybook optimization
+- **GitHub Pages**: Free but limited features and slower builds
+- **AWS S3**: More complex setup, unnecessary for documentation site
+
+---
 
 ## Next Review Items
 
@@ -244,6 +294,7 @@ Examples:
 2. **Component Library Expansion** - Additional semantic components
 3. **Performance Optimization** - Bundle size and runtime optimizations
 4. **Accessibility Enhancements** - WCAG 2.2 compliance review
+5. **Deployment Scaling** - Multi-environment deployment strategy
 
 ---
 

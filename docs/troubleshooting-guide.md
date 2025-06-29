@@ -858,6 +858,113 @@ runStorybookDiagnostics();
 ✅ Auto-fixed 2 issues
 ```
 
+### Issue #014: Netlify Build Failures with Storybook
+
+**Symptoms**:
+- Netlify deployment fails with build errors
+- Error about missing `public` directory
+- Node.js version issues
+- Build command returning non-zero exit codes
+
+**Error Messages**:
+```
+Error: Failed to load static files, no such directory: /opt/build/repo/public
+Make sure this directory exists.
+Failed during stage 'building site': Build script returned non-zero exit code: 2
+```
+
+**Root Cause Analysis**:
+1. **Static Directory Configuration**: Storybook configured to look for `../public` directory that may be empty or missing
+2. **Node.js Version**: Netlify using unsupported Node.js versions
+3. **Build Configuration**: Missing or incorrect Netlify configuration
+
+**Diagnostic Steps**:
+```bash
+# 1. Check if public directory exists and has content
+ls -la public/
+
+# 2. Test build locally
+npm run build
+
+# 3. Check Storybook configuration
+grep -n "staticDirs" .storybook/main.ts
+
+# 4. Verify build output
+ls -la storybook-static/
+```
+
+**Solution**:
+
+**Step 1: Create Netlify Configuration**
+Create `netlify.toml` in project root:
+```toml
+[build]
+  command = "npm run build"
+  publish = "storybook-static"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/iframe.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+```
+
+**Step 2: Fix Storybook Configuration (if needed)**
+In `.storybook/main.ts`, ensure static directory configuration is correct:
+```typescript
+// Remove if causing issues, or ensure directory exists
+// staticDirs: ['../public'],
+
+// Keep minimal configuration for production builds
+features: {
+  storyStoreV7: true
+},
+```
+
+**Step 3: Ensure Public Directory**
+```bash
+# Create public directory with placeholder if needed
+mkdir -p public
+echo "# Keep this directory in git even when empty" > public/.gitkeep
+```
+
+**Prevention**:
+- Always include `netlify.toml` for Netlify deployments
+- Test builds locally before deploying
+- Use stable Node.js versions (18 recommended)
+- Ensure all referenced directories exist
+
+**Related Issues**: #007 (Vite Build Errors), #001 (Component Registration)
+
 ---
 
 ## 📋 Issue Reporting Template
@@ -1027,5 +1134,111 @@ src/tokens/css-vars/
 ```
 
 **Next Steps**: System is ready for production use and component development.
+
+--- 
+
+### Issue #015: Storybook Iframe Loading Blocked by Security Headers
+
+**Symptoms**:
+- Storybook loads but stories don't display properly
+- Console errors about X-Frame-Options blocking iframe loading
+- German/localized error messages in browser console
+- Stories appear blank or fail to load in Storybook Canvas
+
+**Error Messages**:
+```
+Feature Policy: Unbekannte Funktionalität (Feature) "clipboard-write" wird ignoriert.
+Die "X-Frame-Options"-Direktive "deny" verbietet das Laden von "https://your-site.netlify.app/iframe.html?viewMode=story&id=*" in einem Frame.
+X-Frame-Options: DENY prevents loading iframe.html in a frame
+```
+
+**Root Cause Analysis**:
+1. **Storybook Architecture**: Storybook uses iframes to isolate and display stories
+2. **Security Headers**: `X-Frame-Options: DENY` prevents iframe loading entirely
+3. **Overly Restrictive**: Security headers applied to all files including Storybook's iframe.html
+
+**Diagnostic Steps**:
+```bash
+# Check Netlify headers configuration
+grep -A 10 "X-Frame-Options" netlify.toml
+
+# Test iframe loading in browser console
+const iframe = document.createElement('iframe');
+iframe.src = '/iframe.html';
+document.body.appendChild(iframe);
+// Should not throw frame loading errors
+```
+
+**Solution**:
+
+**Update `netlify.toml` configuration**:
+```toml
+[build]
+  command = "npm run build"
+  publish = "storybook-static"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/iframe.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+```
+
+**Key Changes**:
+- **Removed**: `X-Frame-Options: DENY` from global headers
+- **Added**: `X-Frame-Options: SAMEORIGIN` for HTML files
+- **Specific**: Allow iframe loading from same origin (required for Storybook)
+
+**About Clipboard Warning**:
+The `clipboard-write` feature policy warning is non-critical:
+- **Source**: Storybook's copy-to-clipboard functionality
+- **Impact**: No functional issues, just a browser warning
+- **Action**: Can be safely ignored, doesn't affect story functionality
+
+**Verification**:
+```bash
+# Deploy updated configuration
+git add netlify.toml
+git commit -m "fix: Update Netlify headers for Storybook iframe compatibility"
+git push origin main
+
+# Check deployed site
+# Stories should now load properly in Storybook Canvas
+```
+
+**Prevention**:
+- Test security headers with Storybook's iframe architecture
+- Use `SAMEORIGIN` instead of `DENY` for documentation sites
+- Include Storybook-specific header requirements in deployment configuration
+
+**Related Issues**: #014 (Netlify Build Failures)
 
 --- 

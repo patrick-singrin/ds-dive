@@ -72,12 +72,39 @@ ds-dive/
 ✅ **Icon component** with semantic color and sizing systems
 ✅ **Documentation** with auto-generated docs and comprehensive stories
 
+## Deployment
+
+### Netlify Deployment
+
+The design system is configured for automatic deployment on Netlify:
+
+**Configuration**: See `netlify.toml` for deployment settings:
+- **Build command**: `npm run build` (builds Storybook)
+- **Publish directory**: `storybook-static`
+- **Node.js version**: 18 (stable)
+
+**Deployment Steps**:
+1. **Connect repository** to Netlify
+2. **Configure build settings** (auto-detected from `netlify.toml`)
+3. **Deploy**: Automatic on git push to main branch
+
+**Build Output**: Storybook generates a static site in `storybook-static/` ready for hosting
+
+### Other Hosting Platforms
+
+The built Storybook static files work on any static hosting platform:
+- **Vercel**: Deploy from GitHub with `npm run build`
+- **GitHub Pages**: Use GitHub Actions to build and deploy
+- **AWS S3**: Upload `storybook-static/` contents
+- **Firebase Hosting**: Deploy static site
+
 ## Next Steps
 
 1. **Install dependencies** and start Storybook
 2. **Add your Figma component URLs** to create new components
 3. **Customize design tokens** in `src/tokens/data/` to match your brand
 4. **Extend the system** by adding new components following the Blueprint pattern
+5. **Deploy to production** using Netlify or your preferred hosting platform
 
 ## Figma Integration Workflow
 
