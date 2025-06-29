@@ -139,6 +139,51 @@ const preview: Preview = {
         showName: true,
       },
     },
+    iconTheme: {
+      name: 'Icon Color',
+      description: 'Global icon color theme',
+      defaultValue: 'base',
+      toolbar: {
+        icon: 'component',
+        items: [
+          { value: 'base', title: 'Base Icons' },
+          { value: 'primary', title: 'Primary Icons' },
+          { value: 'success', title: 'Success Icons' },
+          { value: 'warning', title: 'Warning Icons' },
+          { value: 'error', title: 'Error Icons' },
+          { value: 'info', title: 'Info Icons' }
+        ],
+        showName: true
+      }
+    },
+    density: {
+      name: 'Density',
+      description: 'Component spacing density',
+      defaultValue: 'medium',
+      toolbar: {
+        icon: 'zoom',
+        items: [
+          { value: 'compact', title: 'Compact', left: '📱' },
+          { value: 'medium', title: 'Medium', left: '💻' },
+          { value: 'comfortable', title: 'Comfortable', left: '🖥️' }
+        ],
+        showName: true
+      }
+    },
+    motion: {
+      name: 'Motion',
+      description: 'Animation preferences',
+      defaultValue: 'full',
+      toolbar: {
+        icon: 'play',
+        items: [
+          { value: 'full', title: 'Full Motion' },
+          { value: 'reduced', title: 'Reduced Motion' },
+          { value: 'none', title: 'No Motion' }
+        ],
+        showName: true
+      }
+    }
   },
   decorators: [
     withThemeByDataAttribute({

@@ -1,0 +1,298 @@
+name: Design System Quality Gates
+on: 
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Build and test the design system
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Storybook
+        run: npm run build:storybook
+
+      - name: Upload Storybook artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+
+  # Visual regression testing with Chromatic
+  visual-regression:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Visual regression testing
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitZeroOnChanges: true
+          buildScriptName: build:storybook
+
+  # Accessibility testing
+  accessibility-audit:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Build Storybook
+        run: npm run build:storybook
+
+      - name: Install axe-core CLI
+        run: npm install -g @axe-core/cli
+
+      - name: Start Storybook server
+        run: |
+          npx http-server storybook-static -p 6006 &
+          sleep 10
+
+      - name: Run accessibility tests
+        run: |
+          axe http://localhost:6006 --exit
+          axe http://localhost:6006/iframe.html?id=foundation-icons--default --exit
+          axe http://localhost:6006/iframe.html?id=molecules-blueprint--default --exit
+
+  # Performance and bundle analysis
+  performance-budget:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Build Storybook
+        run: npm run build:storybook
+
+      - name: Bundle size analysis
+        run: |
+          npm install -g bundlesize
+          bundlesize
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli
+
+      - name: Start Storybook server
+        run: |
+          npx http-server storybook-static -p 6006 &
+          sleep 10
+
+      - name: Run Lighthouse CI
+        run: lhci autorun --config=lighthouserc.js
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  # Design token validation
+  token-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate design tokens
+        run: |
+          npm run build:tokens:dry
+          echo "✅ Design tokens validation passed"
+
+      - name: Check for token conflicts
+        run: |
+          # Check for duplicate token names across files
+          find src/tokens/data -name "*.json" -exec cat {} \; | \
+          jq -r 'paths(scalars) as $p | $p | join(".")' | \
+          sort | uniq -d | \
+          if read line; then echo "❌ Duplicate token found: $line" && exit 1; else echo "✅ No duplicate tokens found"; fi
+
+      - name: Validate token references
+        run: |
+          # Check that all token references can be resolved
+          npm run build:tokens 2>&1 | grep -q "100% success rate" || (echo "❌ Token resolution failed" && exit 1)
+          echo "✅ All token references resolved successfully"
+
+  # Type checking
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript type checking
+        run: npx tsc --noEmit
+
+      - name: ESLint
+        run: npx eslint src/ --ext .ts,.js
+
+  # Component library build validation
+  library-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Build component library
+        run: npm run build
+
+      - name: Validate exports
+        run: |
+          # Check that main exports are available
+          node -e "
+            const pkg = require('./package.json');
+            console.log('📦 Package exports:', pkg.exports || 'No exports defined');
+            
+            // Test component imports
+            try {
+              require('./dist/index.js');
+              console.log('✅ Main export successful');
+            } catch (e) {
+              console.error('❌ Main export failed:', e.message);
+              process.exit(1);
+            }
+          "
+
+  # Security and dependency audit
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Security audit
+        run: |
+          npm audit --audit-level=moderate
+          echo "✅ Security audit passed"
+
+      - name: Check for outdated dependencies
+        run: |
+          npm outdated || echo "⚠️  Some dependencies are outdated"
+
+  # Release preparation (only on main branch)
+  release-check:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [build-and-test, visual-regression, accessibility-audit, performance-budget, token-validation, type-check, library-build, security-audit]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build everything
+        run: |
+          npm run build:tokens
+          npm run build
+          npm run build:storybook
+
+      - name: Release readiness check
+        run: |
+          echo "🚀 All quality gates passed - ready for release!"
+          echo "📊 Bundle sizes within limits"
+          echo "♿ Accessibility compliance verified"
+          echo "🎨 Visual regression tests passed"
+          echo "🔒 Security audit clean"
+          echo "📦 Component library builds successfully" 

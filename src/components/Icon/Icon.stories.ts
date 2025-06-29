@@ -22,213 +22,119 @@ const meta: Meta<DiveIcon> = {
         component: `
 # Icon Component
 
-The Icon component provides seamless integration with Tabler Icons, offering 5,880+ high-quality SVG icons with consistent design and performance optimization.
+Foundation-level atom providing consistent icon rendering using the Tabler Icons library.
+Icons are primitive visual elements that serve as building blocks for molecules and organisms.
 
-## Features
+## Design Principles
+- **Consistency**: All icons use 24x24 grid with 2px stroke weight
+- **Accessibility**: Supports both decorative and meaningful icon patterns  
+- **Performance**: Optimized SVG rendering with Shadow DOM encapsulation
+- **Theming**: Integrates with design token color system
 
-- **5,880+ Tabler Icons**: Complete icon library with 24x24 grid consistency
-- **Design Token Integration**: Sizing and coloring through CSS custom properties
-- **Performance Optimized**: Lightweight SVG rendering with tree-shaking support
-- **Accessibility First**: Proper ARIA attributes and screen reader support
-- **Framework Agnostic**: Works with any frontend framework
-- **Interactive Support**: Click handling and keyboard navigation
-
-## Design Tokens Used
-
-- \`--icon-size-*\`: Consistent sizing scale (small: 16px, medium: 24px, large: 32px, xlarge: 48px)
-- \`--icon-color-*\`: Semantic color system using official 6 categories (base, primary, success, warning, error, info)
-- \`--Color-*\`: Integration with global color system
-
-## Performance Benefits
-
-- **Tree Shaking**: Only used icons are included in bundles
-- **SVG Optimization**: Minimal DOM footprint with optimized rendering
-- **Lazy Loading**: Support for dynamic icon loading (future enhancement)
+## Usage Guidelines
+- Use \`aria-hidden="true"\` for decorative icons
+- Provide \`aria-label\` for meaningful icons
+- Maintain 44px minimum touch targets for interactive icons
+- Follow WCAG 3:1 color contrast requirements
         `
+      }
+    },
+    a11y: {
+      config: {
+        rules: [
+          { id: 'color-contrast', enabled: true },
+          { id: 'image-alt', enabled: true },
+          { id: 'button-name', enabled: true }
+        ]
       }
     }
   },
-  tags: ['autodocs'],
+  tags: ['autodocs', 'test'],
   argTypes: {
     name: {
       control: { type: 'select' },
       options: [
-        'home', 'user', 'settings', 'check', 'x', 'plus', 'minus',
-        'chevron-right', 'chevron-left', 'chevron-up', 'chevron-down',
-        'alert-triangle', 'info', 'heart', 'star'
+        'check', 'home', 'user', 'heart', 'star', 'settings', 'x', 'plus', 
+        'minus', 'chevron-right', 'chevron-left', 'chevron-up', 'chevron-down', 
+        'alert-triangle', 'info-circle'
       ],
-      description: 'Icon name from Tabler Icons library',
+      description: 'Icon name from available Tabler Icons set',
       table: {
-        category: 'Content'
+        type: { summary: 'string' },
+        defaultValue: { summary: 'check' }
       }
     },
     size: {
       control: { type: 'select' },
-      options: ['small', 'medium', 'large', 'xlarge'],
-      description: 'Size variant using design tokens',
+      options: ['small', 'medium', 'large'],
+      description: 'Icon size following design token scale',
       table: {
-        category: 'Appearance',
+        type: { summary: 'small | medium | large' },
         defaultValue: { summary: 'medium' }
       }
     },
     color: {
       control: { type: 'select' },
-      options: ['', 'base', 'primary', 'success', 'warning', 'error', 'info'],
-      description: 'Color variant from official 6-category design token system',
+      options: ['base', 'primary', 'success', 'warning', 'error', 'info'],
+      description: 'Color variant using design token categories',
       table: {
-        category: 'Appearance'
-      }
-    },
-    interactive: {
-      control: { type: 'boolean' },
-      description: 'Whether the icon is clickable with hover states',
-      table: {
-        category: 'Behavior',
-        defaultValue: { summary: 'false' }
-      }
-    },
-    loading: {
-      control: { type: 'boolean' },
-      description: 'Whether the icon is in loading state',
-      table: {
-        category: 'State',
-        defaultValue: { summary: 'false' }
-      }
-    },
-    ariaLabel: {
-      control: { type: 'text' },
-      description: 'ARIA label for accessibility (required for interactive icons)',
-      table: {
-        category: 'Accessibility'
-      }
-    },
-    ariaHidden: {
-      control: { type: 'text' },
-      description: 'String value for aria-hidden attribute (use "true" to hide from screen readers)',
-      table: {
-        category: 'Accessibility',
-        defaultValue: { summary: 'null' }
+        type: { summary: 'base | primary | success | warning | error | info' },
+        defaultValue: { summary: 'base' }
       }
     }
-  },
-  args: {
-    name: 'home',
-    size: 'medium',
-    interactive: false,
-    loading: false,
-    ariaHidden: null
   }
 };
 
 export default meta;
-type Story = StoryObj<DiveIcon>;
+type Story = StoryObj<typeof meta>;
 
 /**
- * Default interactive example with configurable properties
+ * Default icon story with interactive controls
  */
-export const Interactive: Story = {
-  args: {
-    name: 'home',
-    size: 'medium',
-    color: 'primary'
-  },
+export const Default: Story = {
   render: (args) => html`
     <dive-icon
-      name="${args.name}"
-      size="${args.size}"
-      color="${ifDefined(args.color)}"
-      ?interactive="${args.interactive}"
-      ?loading="${args.loading}"
-      aria-label="${ifDefined(args.ariaLabel)}"
-      aria-hidden="${ifDefined(args.ariaHidden)}"
+      name="${args.name || 'check'}"
+      size="${args.size || 'medium'}"
+      color="${args.color || 'base'}"
     ></dive-icon>
-  `
-};
-
-/**
- * All available size variants
- */
-export const Sizes: Story = {
-  render: () => html`
-    <div style="display: flex; gap: 2rem; align-items: center;">
-      <div style="text-align: center;">
-        <dive-icon name="home" size="small"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Small (16px)</div>
-      </div>
-      <div style="text-align: center;">
-        <dive-icon name="home" size="medium"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Medium (24px)</div>
-      </div>
-      <div style="text-align: center;">
-        <dive-icon name="home" size="large"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Large (32px)</div>
-      </div>
-      <div style="text-align: center;">
-        <dive-icon name="home" size="xlarge"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">XLarge (48px)</div>
-      </div>
-    </div>
   `,
-  parameters: {
-    docs: {
-      description: {
-        story: 'Size variants demonstrating the consistent sizing scale. All sizes maintain crisp rendering and proper proportions.'
-      }
-    }
+  args: {
+    name: 'check',
+    size: 'medium',
+    color: 'base'
   }
 };
 
 /**
- * Color variants using official 6-category design token system
+ * All available icons in the system
  */
-export const Colors: Story = {
+export const IconGallery: Story = {
   render: () => html`
-    <div style="display: grid; gap: 1.5rem; grid-template-columns: repeat(3, 1fr); text-align: center;">
-      <div>
-        <dive-icon name="user" color="base" size="large"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Base</div>
-      </div>
-      <div>
-        <dive-icon name="check" color="primary" size="large"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Primary</div>
-      </div>
-      <div>
-        <dive-icon name="check" color="success" size="large"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Success</div>
-      </div>
-      <div>
-        <dive-icon name="alert-triangle" color="warning" size="large"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Warning</div>
-      </div>
-      <div>
-        <dive-icon name="x" color="error" size="large"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Error</div>
-      </div>
-      <div>
-        <dive-icon name="info-circle" color="info" size="large"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Info</div>
-      </div>
-    </div>
-  `,
-  parameters: {
-    docs: {
-      description: {
-        story: 'Official 6-category color variants using our semantic design token system: Base (neutral), Primary (brand), Success (positive actions), Warning (caution), Error (danger), and Info (informational).'
-      }
-    }
-  }
-};
-
-/**
- * Common Tabler Icons showcase
- */
-export const CommonIcons: Story = {
-  render: () => html`
-    <div style="display: grid; gap: 1rem; grid-template-columns: repeat(6, 1fr); text-align: center;">
-      ${['home', 'user', 'settings', 'check', 'x', 'plus', 'minus', 'chevron-right', 'chevron-left', 'chevron-up', 'chevron-down', 'alert-triangle', 'info-circle', 'heart', 'star'].map(iconName => html`
-        <div>
-          <dive-icon name="${iconName}" size="large" color="primary"></dive-icon>
-          <div style="font-size: 11px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default); word-break: break-word;">${iconName}</div>
+    <div style="
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+      gap: 1rem; 
+      padding: 1rem;
+      font-family: var(--font-family-primary);
+    ">
+      ${['check', 'home', 'user', 'heart', 'star', 'settings', 'x', 'plus', 
+         'minus', 'chevron-right', 'chevron-left', 'chevron-up', 'chevron-down', 
+         'alert-triangle', 'info-circle'].map(iconName => html`
+        <div style="
+          display: flex; 
+          flex-direction: column; 
+          align-items: center; 
+          gap: 0.5rem;
+          padding: 1rem;
+          border: 1px solid var(--Color-Base-Border-default);
+          border-radius: 8px;
+          text-align: center;
+        ">
+          <dive-icon name="${iconName}" size="medium" color="base"></dive-icon>
+          <code style="font-size: 12px; color: var(--Color-Base-Subtle-Foreground-default);">
+            ${iconName}
+          </code>
         </div>
       `)}
     </div>
@@ -236,153 +142,234 @@ export const CommonIcons: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Selection of commonly used Tabler Icons. The component includes optimized SVG paths for better performance than external icon fonts.'
+        story: 'Complete gallery of all 15 available icons in the design system foundation.'
       }
     }
   }
 };
 
 /**
- * Interactive icons with click handling
+ * Color variants demonstration
  */
-export const InteractiveIcons: Story = {
+export const ColorVariants: Story = {
   render: () => html`
-    <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
-      <dive-icon 
-        name="heart" 
-        size="large" 
-        color="error" 
-        interactive 
-        aria-label="Like this item"
-        @icon-click=${(e: CustomEvent) => {
-          console.log('Heart clicked:', e.detail);
-          alert('Heart clicked! Check console for details.');
-        }}>
-      </dive-icon>
-      
-      <dive-icon 
-        name="star" 
-        size="large" 
-        color="warning" 
-        interactive 
-        aria-label="Add to favorites"
-        @icon-click=${(e: CustomEvent) => {
-          console.log('Star clicked:', e.detail);
-          alert('Star clicked! Check console for details.');
-        }}>
-      </dive-icon>
-      
-      <dive-icon 
-        name="settings" 
-        size="large" 
-        color="base" 
-        interactive 
-        aria-label="Open settings"
-        @icon-click=${(e: CustomEvent) => {
-          console.log('Settings clicked:', e.detail);
-          alert('Settings clicked! Check console for details.');
-        }}>
-      </dive-icon>
-      
-      <dive-icon 
-        name="x" 
-        size="large" 
-        color="base" 
-        interactive 
-        aria-label="Close dialog"
-        @icon-click=${(e: CustomEvent) => {
-          console.log('Close clicked:', e.detail);
-          alert('Close clicked! Check console for details.');
-        }}>
-      </dive-icon>
+    <div style="
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+      gap: 1.5rem;
+      font-family: var(--font-family-primary);
+    ">
+      ${['base', 'primary', 'success', 'warning', 'error', 'info'].map(color => html`
+        <div style="
+          padding: 1.5rem;
+          border: 2px solid var(--Color-${color === 'base' ? 'Base' : color.charAt(0).toUpperCase() + color.slice(1)}-Border-default);
+          border-radius: 8px;
+          text-align: center;
+          background: var(--Color-${color === 'base' ? 'Base' : color.charAt(0).toUpperCase() + color.slice(1)}-Subtle-Background-default);
+        ">
+          <dive-icon name="check" size="large" color="${color}"></dive-icon>
+          <div style="margin-top: 0.5rem; font-weight: var(--font-weight-medium);">
+            ${color.charAt(0).toUpperCase() + color.slice(1)}
+          </div>
+          <code style="font-size: 12px; opacity: 0.7;">
+            color="${color}"
+          </code>
+        </div>
+      `)}
     </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story: 'Icon color variants using the six official design token categories.'
+      }
+    }
+  }
+};
+
+/**
+ * Size scale demonstration  
+ */
+export const SizeScale: Story = {
+  render: () => html`
+    <div style="
+      display: flex; 
+      align-items: center; 
+      gap: 2rem;
+      font-family: var(--font-family-primary);
+    ">
+      ${['small', 'medium', 'large'].map(size => html`
+        <div style="text-align: center;">
+          <dive-icon name="star" size="${size}" color="primary"></dive-icon>
+          <div style="margin-top: 0.5rem; font-weight: var(--font-weight-medium);">
+            ${size.charAt(0).toUpperCase() + size.slice(1)}
+          </div>
+          <code style="font-size: 12px; opacity: 0.7;">
+            size="${size}"
+          </code>
+        </div>
+      `)}
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story: 'Icon size scale following design token dimensions: small (16px), medium (24px), large (32px).'
+      }
+    }
+  }
+};
+
+/**
+ * Accessibility patterns
+ */
+export const AccessibilityPatterns: Story = {
+  render: () => html`
+    <div style="
+      display: grid; 
+      gap: 2rem;
+      font-family: var(--font-family-primary);
+      max-width: 600px;
+    ">
+      <div style="
+        padding: 1.5rem;
+        border: 1px solid var(--Color-Base-Border-default);
+        border-radius: 8px;
+        background: var(--Color-Base-Subtle-Background-default);
+      ">
+        <h4 style="margin: 0 0 1rem 0; color: var(--Color-Base-Foreground-default);">
+          Decorative Icons (aria-hidden)
+        </h4>
+        <p style="
+          display: flex; 
+          align-items: center; 
+          gap: 0.5rem; 
+          margin: 0;
+          color: var(--Color-Base-Foreground-default);
+        ">
+          <dive-icon name="check" size="medium" color="success" aria-hidden="true"></dive-icon>
+          Task completed successfully
+        </p>
+      </div>
+      
+      <div style="
+        padding: 1.5rem;
+        border: 1px solid var(--Color-Base-Border-default);
+        border-radius: 8px;
+        background: var(--Color-Base-Subtle-Background-default);
+      ">
+        <h4 style="margin: 0 0 1rem 0; color: var(--Color-Base-Foreground-default);">
+          Meaningful Icons (aria-label)
+        </h4>
+        <button style="
+          display: flex; 
+          align-items: center; 
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          border: 1px solid var(--Color-Primary-Border-default);
+          border-radius: 4px;
+          background: var(--Color-Primary-Primary-Background-default);
+          color: var(--Color-Primary-Primary-Foreground-default);
+          cursor: pointer;
+        " aria-label="Delete item permanently">
+          <dive-icon name="x" size="medium" color="primary" aria-hidden="true"></dive-icon>
+          Delete
+        </button>
+      </div>
+      
+      <div style="
+        padding: 1.5rem;
+        border: 1px solid var(--Color-Base-Border-default);
+        border-radius: 8px;
+        background: var(--Color-Base-Subtle-Background-default);
+      ">
+        <h4 style="margin: 0 0 1rem 0; color: var(--Color-Base-Foreground-default);">
+          Icon-Only Button (44px touch target)
+        </h4>
+        <button style="
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid var(--Color-Info-Border-default);
+          border-radius: 4px;
+          background: var(--Color-Info-Subtle-Background-default);
+          cursor: pointer;
+        " aria-label="Show information">
+          <dive-icon name="info-circle" size="medium" color="info"></dive-icon>
+        </button>
+      </div>
+    </div>
+  `,
+  parameters: {
+    docs: {
+      description: {
+        story: 'Accessibility patterns showing proper aria-hidden and aria-label usage, plus 44px minimum touch targets.'
+      }
+    }
+  }
+};
+
+/**
+ * Performance testing story with render metrics
+ */
+export const PerformanceTest: Story = {
+  render: () => {
+    let renderTime = 0;
+    let iconCount = 100;
     
-    <div style="margin-top: 1rem; font-size: 14px; color: var(--Color-Base-Foreground-default);">
-      <strong>Try clicking the icons above!</strong> Interactive icons have hover states and emit click events.
-      Check the browser console for event details.
-    </div>
-  `,
-  parameters: {
-    docs: {
-      description: {
-        story: 'Interactive icons with click handling, hover states, and proper accessibility. Icons become focusable and emit custom events when clicked.'
-      }
-    }
-  }
-};
-
-/**
- * States demonstration
- */
-export const States: Story = {
-  render: () => html`
-    <div style="display: grid; gap: 2rem; grid-template-columns: repeat(2, 1fr); text-align: center;">
-      <div>
-        <dive-icon name="check" size="large" color="primary"></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Normal</div>
-      </div>
-      <div>
-        <dive-icon name="home" size="large" color="primary" loading></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Loading</div>
-      </div>
-      <div>
-        <dive-icon name="settings" size="large" color="base" interactive></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Interactive (hover me)</div>
-      </div>
-      <div>
-        <dive-icon name="alert-triangle" size="large" error></dive-icon>
-        <div style="font-size: 12px; margin-top: 0.5rem; color: var(--Color-Base-Foreground-default);">Error</div>
-      </div>
-    </div>
-  `,
-  parameters: {
-    docs: {
-      description: {
-        story: 'Different states of the icon component including normal, loading, interactive, and error states.'
-      }
-    }
-  }
-};
-
-/**
- * Integration with other components
- */
-export const ComponentIntegration: Story = {
-  render: () => html`
-    <div style="display: flex; gap: 2rem; flex-direction: column; align-items: flex-start;">
-      <div style="display: flex; gap: 1rem; align-items: center; padding: 1rem; border: 1px solid var(--Color-Base-Border-default); border-radius: 8px;">
-        <dive-icon name="user" color="primary"></dive-icon>
-        <span>User Profile</span>
-        <dive-icon name="chevron-right" color="base" size="small"></dive-icon>
-      </div>
-      
-      <div style="display: flex; gap: 1rem; align-items: center; padding: 1rem; background: var(--Color-Primary-Subtle-Background-default, #eaf1fc); border-radius: 8px; color: var(--Color-Primary-Subtle-Foreground-default, #245db8);">
-        <dive-icon name="check" color="primary"></dive-icon>
-        <span>Success: Your changes have been saved</span>
-      </div>
-      
-      <div style="display: flex; gap: 1rem; align-items: center; padding: 1rem; background: var(--Color-Base-Subtle-Background-default, #ecedf0); border-radius: 8px; color: var(--Color-Base-Subtle-Foreground-default, #31394a);">
-        <dive-icon name="alert-triangle" color="warning"></dive-icon>
-        <span>Warning: Please review your settings</span>
-      </div>
-      
-      <div style="display: flex; gap: 0.5rem; align-items: center;">
-        <button style="display: flex; gap: 0.5rem; align-items: center; padding: 0.5rem 1rem; border: 1px solid var(--Color-Base-Border-default); border-radius: 6px; background: white; cursor: pointer;">
-          <dive-icon name="plus" size="small"></dive-icon>
-          <span>Add Item</span>
-        </button>
+    const startTime = performance.now();
+    
+    // Simulate large icon rendering for performance testing
+    const icons = Array.from({ length: iconCount }, (_, i) => html`
+      <dive-icon 
+        name="check" 
+        size="medium" 
+        color="base"
+        style="margin: 2px;"
+      ></dive-icon>
+    `);
+    
+    // Calculate render time (approximated)
+    requestAnimationFrame(() => {
+      renderTime = performance.now() - startTime;
+    });
+    
+    return html`
+      <div style="font-family: var(--font-family-primary);">
+        <div style="
+          background: var(--Color-Info-Subtle-Background-default);
+          border: 2px solid var(--Color-Info-Border-default);
+          border-radius: 8px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+        ">
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--Color-Info-Primary-Background-default);">
+            ⚡ Performance Metrics
+          </h4>
+          <div>Rendering ${iconCount} icons</div>
+          <div style="font-family: var(--font-family-mono); font-size: 14px; opacity: 0.8;">
+            Estimated render time: ~${renderTime.toFixed(2)}ms
+          </div>
+        </div>
         
-        <button style="display: flex; gap: 0.5rem; align-items: center; padding: 0.5rem 1rem; border: 1px solid var(--Color-Base-Border-default); border-radius: 6px; background: white; cursor: pointer;">
-          <dive-icon name="settings" size="small"></dive-icon>
-          <span>Settings</span>
-        </button>
+        <div style="
+          max-height: 300px; 
+          overflow-y: auto; 
+          border: 1px solid var(--Color-Base-Border-default);
+          border-radius: 4px;
+          padding: 1rem;
+        ">
+          ${icons}
+        </div>
       </div>
-    </div>
-  `,
+    `;
+  },
   parameters: {
     docs: {
       description: {
-        story: 'Examples of integrating icons with other UI components like cards, alerts, and buttons. Icons provide visual hierarchy and improve usability.'
+        story: 'Performance testing story demonstrating icon rendering capabilities with 100 simultaneous icons.'
       }
     }
   }

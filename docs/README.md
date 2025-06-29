@@ -398,6 +398,7 @@ Our CSS Variable Pipeline transforms structured JSON design tokens into CSS cust
 ### Core Documentation
 - **[CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)** - Complete guide for using design tokens
 - **[CSS Variable Pipeline Documentation](../src/tokens/CSS_Variable_Pipeline_Documentation.md)** - Technical architecture details
+- **[Enterprise Setup](./enterprise-setup.md)** - Enterprise-grade Storybook features, performance monitoring, and quality gates
 - **[Troubleshooting Guide](./troubleshooting-guide.md)** - Common issues and solutions
 - **[Architecture Decisions](./architecture-decisions.md)** - ADRs for major system decisions
 

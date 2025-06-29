@@ -22,12 +22,12 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "build:tokens": "tsx scripts/generate-css-variables.ts",
-    "build:tokens:dev": "tsx scripts/generate-css-variables.ts --verbose",
+    "build:tokens:dev": "npm run build:tokens -- --verbose",
     "build:tokens:watch": "tsx scripts/generate-css-variables.ts --watch",
-    "build:tokens:dry": "tsx scripts/generate-css-variables.ts --dry-run --verbose",
+    "build:tokens:dry": "npm run build:tokens -- --dry-run",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
+    "build:storybook": "storybook build",
     "test:coverage": "vitest run --coverage",
     "tokens:build": "node scripts/build-tokens.mjs",
     "tokens:watch": "node scripts/build-tokens.mjs --watch",
@@ -35,7 +35,10 @@
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "chromatic": "npx chromatic",
     "test:a11y": "axe-storybook",
-    "analyze": "vite-bundle-analyzer dist/stats.html"
+    "analyze": "vite-bundle-analyzer dist/stats.html",
+    "build:analyze": "npm run build:storybook && npx bundlesize",
+    "performance:test": "npm run build:storybook && npx lighthouse-ci --config=lighthouserc.js",
+    "visual:test": "npm run build:storybook && chromatic --exit-zero-on-changes"
   },
   "dependencies": {
     "lit": "^3.1.0"
@@ -102,5 +105,22 @@
     "a11y"
   ],
   "author": "Dive Design Team",
-  "license": "MIT"
+  "license": "MIT",
+  "bundlesize": [
+    {
+      "path": "./storybook-static/static/js/*.js",
+      "maxSize": "500 kB",
+      "compression": "gzip"
+    },
+    {
+      "path": "./storybook-static/static/css/*.css", 
+      "maxSize": "50 kB",
+      "compression": "gzip"
+    },
+    {
+      "path": "./dist/**/*.js",
+      "maxSize": "200 kB",
+      "compression": "gzip"
+    }
+  ]
 }
