@@ -1,0 +1,339 @@
+{
+  "designSystemKnowledgeGraph": {
+    "meta": {
+      "version": "1.0.0",
+      "lastUpdated": "2024-12-30",
+      "totalComponents": 3,
+      "totalTokens": 1004,
+      "complexity": "high"
+    },
+    
+    "designTokens": {
+      "Color": {
+        "Base": {
+          "purpose": "Neutral foundation colors for all components",
+          "figmaTokens": [
+            "--Color-Base-Background-default",
+            "--Color-Base-Background-hover", 
+            "--Color-Base-Background-active",
+            "--Color-Base-Background-disabled",
+            "--Color-Base-Foreground-default",
+            "--Color-Base-Foreground-hover",
+            "--Color-Base-Foreground-active", 
+            "--Color-Base-Foreground-disabled",
+            "--Color-Base-Primary-Background-default",
+            "--Color-Base-Primary-Foreground-default",
+            "--Color-Base-Subtle-Background-default",
+            "--Color-Base-Subtle-Foreground-default",
+            "--Color-Base-Border-default"
+          ],
+          "usedBy": ["Button.base", "Blueprint.secondary", "Icon.default"],
+          "semanticRules": [
+            "Base.Primary tokens are for dark neutral backgrounds (#242a37)",
+            "Base.Subtle tokens are for light neutral backgrounds (#ecedf0)",
+            "Never mix Base.Primary background with Base.Foreground text",
+            "Always pair Base.Primary-Background with Base.Primary-Foreground"
+          ],
+          "states": ["default", "hover", "active", "disabled"],
+          "colorModes": {
+            "light": "#1d222c (foreground), #ffffff (background)",
+            "dark": "#ffffff (foreground), #1d222c (background)",
+            "hc-light": "High contrast light variant",
+            "hc-dark": "High contrast dark variant"
+          }
+        },
+        
+        "Primary": {
+          "purpose": "Brand colors for primary actions and focus states",
+          "figmaTokens": [
+            "--Color-Primary-Primary-Background-default",
+            "--Color-Primary-Primary-Background-hover",
+            "--Color-Primary-Primary-Background-active", 
+            "--Color-Primary-Primary-Background-disabled",
+            "--Color-Primary-Primary-Foreground-default",
+            "--Color-Primary-Primary-Foreground-hover",
+            "--Color-Primary-Primary-Foreground-active",
+            "--Color-Primary-Primary-Foreground-disabled",
+            "--Color-Primary-Background-default",
+            "--Color-Primary-Foreground-default",
+            "--Color-Primary-Subtle-Background-default",
+            "--Color-Primary-Border-default"
+          ],
+          "usedBy": ["Button.primary", "Blueprint.primary", "Icon.primary"],
+          "semanticRules": [
+            "Primary.Primary tokens are for filled primary buttons (#2c72e0)",
+            "Primary.Subtle tokens are for outline/ghost hover states (#eaf1fc)",
+            "Always use Primary.Primary for focus rings",
+            "Primary tokens should dominate in primary actions"
+          ],
+          "states": ["default", "hover", "active", "disabled"]
+        },
+        
+        "Error": {
+          "purpose": "Error and destructive action colors",
+          "figmaTokens": [
+            "--Color-Error-Primary-Background-default",
+            "--Color-Error-Primary-Foreground-default", 
+            "--Color-Error-Subtle-Background-default"
+          ],
+          "usedBy": ["Button.destructive"],
+          "semanticRules": [
+            "Error tokens only for destructive actions",
+            "Never mix Error with Success or Primary tokens",
+            "Use Error.Subtle for non-critical error states"
+          ]
+        }
+      },
+      
+      "Spacing": {
+        "purpose": "Consistent spacing system across all components",
+        "figmaTokens": [
+          "--Spacing-0",
+          "--Spacing-1", 
+          "--Spacing-2",
+          "--Spacing-3",
+          "--Spacing-4",
+          "--Spacing-5"
+        ],
+        "values": {
+          "Spacing-1": "4px - Small gaps, icon spacing",
+          "Spacing-2": "8px - Default component gap, small button padding",
+          "Spacing-3": "10px - Button padding vertical (default size)",
+          "Spacing-4": "16px - Button padding horizontal",
+          "Spacing-5": "20px - Large component spacing"
+        },
+        "usagePatterns": {
+          "Button.small": "Spacing-1 (vertical) + Spacing-4 (horizontal)",
+          "Button.default": "Spacing-3 (vertical) + Spacing-4 (horizontal)", 
+          "Component.gap": "Spacing-2 (8px)",
+          "Icon.gap": "Spacing-2 (8px)"
+        },
+        "semanticRules": [
+          "Always use spacing tokens, never hardcoded values",
+          "Maintain consistent spacing ratios",
+          "Use calc() for px conversion: calc(var(--Spacing-3) * 1px)"
+        ]
+      },
+      
+      "Typography": {
+        "purpose": "Font system and text sizing",
+        "figmaTokens": [
+          "--font-family-primary",
+          "--font-weight-regular",
+          "--font-weight-medium", 
+          "--font-weight-semi-bold"
+        ],
+        "patterns": {
+          "Button.default": "16px font-size, 24px line-height",
+          "Button.small": "14px font-size, 20px line-height",
+          "Icon.alignment": "24px line-height matches 24px icon height"
+        },
+        "figmaSpecifications": {
+          "default": "24px line-height prevents height changes when toggling icons",
+          "small": "20px line-height matches 20px small icons"
+        }
+      }
+    },
+    
+    "components": {
+      "Button": {
+        "path": "src/components/Button/Button.ts",
+        "storiesPath": "src/components/Button/Button.stories.ts", 
+        "complexity": "high",
+        "lines": 485,
+        "storyLines": 733,
+        
+        "purpose": "Primary interaction component with comprehensive variant matrix",
+        "keyFeature": "Show icon toggle without height change",
+        
+        "dependencies": ["Icon", "Typography", "Color", "Spacing"],
+        "tokenCategories": ["Color", "Spacing", "Border", "Typography"],
+        
+        "variants": {
+          "type": {
+            "options": ["base", "primary", "destructive"],
+            "purpose": "Semantic meaning and color scheme",
+            "default": "base"
+          },
+          "variant": {
+            "options": ["filled", "outline", "ghost"], 
+            "purpose": "Visual style treatment",
+            "default": "filled"
+          },
+          "size": {
+            "options": ["small", "default"],
+            "purpose": "Size scaling",
+            "default": "default"
+          },
+          "showIcon": {
+            "type": "boolean",
+            "purpose": "Toggle icon visibility without affecting height",
+            "figmaAccurate": true,
+            "implementation": "24px line-height matches 24px icon height"
+          }
+        },
+        
+        "tokenUsage": {
+          "required": [
+            "Color-{type}-Background-*",
+            "Color-{type}-Foreground-*", 
+            "Color-{type}-Border-*",
+            "Spacing-2", "Spacing-3", "Spacing-4",
+            "font-family-primary"
+          ],
+          "forbidden": [
+            "Color-Base-Primary-Background with Color-Base-Foreground",
+            "Hardcoded colors or spacing values",
+            "Non-semantic token combinations"
+          ]
+        },
+        
+        "patterns": {
+          "showIcon": {
+            "description": "Core feature: Toggle icon display without height change",
+            "implementation": "CSS line-height matches icon height exactly",
+            "figmaCompliant": true,
+            "prevents": "Layout shift when toggling icons"
+          },
+          "stateManagement": {
+            "required": ["default", "hover", "active", "disabled"],
+            "implementation": "All variants must implement all states",
+            "tokens": "Use corresponding state tokens for each variant"
+          },
+          "accessibility": {
+            "required": ["WCAG 2.1 AA", "Keyboard navigation", "Screen reader support"],
+            "implementation": "Custom events, ARIA labels, focus management"
+          }
+        },
+        
+        "storiesStructure": {
+          "Interactive": "Main playground story with all controls",
+          "ShowIconToggle": "Demonstrates core show-icon feature",
+          "DesignMatrix": "Complete type × variant matrix",
+          "VisualRegressionMatrix": "Optimized for automated testing",
+          "HoverStateValidation": "Critical for catching token misuse"
+        }
+      },
+      
+      "Blueprint": {
+        "path": "src/components/_Blueprint/_Blueprint.ts",
+        "purpose": "Reference implementation for all design system patterns",
+        "complexity": "medium",
+        "lines": 377,
+        
+        "demonstrates": [
+          "CSS custom property inheritance",
+          "Design token integration patterns",
+          "State management with @state decorator",
+          "Event handling patterns", 
+          "Accessibility implementation",
+          "Loading and pressed states",
+          "Component slot usage"
+        ],
+        
+        "dependencies": ["Color", "Spacing", "Typography"],
+        "tokenCategories": ["Color", "Spacing", "Typography"],
+        
+        "patterns": {
+          "tokenInheritance": "Demonstrates proper CSS custom property setup",
+          "stateManagement": "Shows @state usage for internal component state",
+          "accessibility": "Complete ARIA implementation example",
+          "eventHandling": "Custom event dispatching patterns"
+        }
+      },
+      
+      "Icon": {
+        "path": "src/components/Icon/Icon.ts",
+        "purpose": "SVG icon component with Tabler icon integration",
+        "complexity": "low",
+        
+        "dependencies": ["Color"],
+        "tokenCategories": ["Color"],
+        
+        "features": [
+          "Tabler icon system integration",
+          "Size variants (small: 20px, default: 24px)",
+          "Color token integration",
+          "Shadow DOM encapsulation"
+        ],
+        
+        "usedBy": ["Button", "Blueprint"],
+        "critical": "Height must match text line-height for proper alignment"
+      }
+    },
+    
+    "establishedPatterns": {
+      "componentStructure": {
+        "order": [
+          "Imports (Lit + decorators)",
+          "JSDoc with @element, @slot, @fires, @example",
+          "CSS with :host and token inheritance",
+          "Property definitions with @property decorators",
+          "State management with @state",
+          "Lifecycle methods (willUpdate)",
+          "Event handlers (private methods)",
+          "Render method with classMap and ifDefined",
+          "TypeScript declaration merging"
+        ]
+      },
+      
+      "cssPatterns": {
+        "tokenInheritance": "Define CSS custom properties at :host level",
+        "semanticNaming": "Use semantic component-specific variable names",
+        "stateImplementation": "All interactive components need hover/active/disabled states",
+        "figmaAccuracy": "Measurements must match Figma specifications exactly"
+      },
+      
+      "storyPatterns": {
+        "required": ["Interactive", "Visual Regression Matrix", "Accessibility"],
+        "structure": "Meta with comprehensive argTypes and documentation",
+        "template": "Use ifDefined and classMap for proper attribute handling",
+        "testing": "Include hover state validation stories"
+      }
+    },
+    
+    "qualityGates": {
+      "tokenValidation": [
+        "No hardcoded colors or spacing",
+        "Semantic token usage only",
+        "All interaction states implemented",
+        "Figma compliance verified"
+      ],
+      "accessibility": [
+        "WCAG 2.1 AA compliance",
+        "Keyboard navigation support",
+        "Screen reader compatibility",
+        "Focus management"
+      ],
+      "performance": [
+        "Efficient re-renders",
+        "Hardware acceleration where appropriate",
+        "Minimal DOM thrashing"
+      ],
+      "consistency": [
+        "Follows established component patterns",
+        "Uses standard event handling",
+        "Maintains design system coherence"
+      ]
+    },
+    
+    "contextPriority": {
+      "tokenExpert": {
+        "focus": ["designTokens", "tokenUsage", "qualityGates.tokenValidation"],
+        "contextSize": "20% of total context"
+      },
+      "componentArchitect": {
+        "focus": ["establishedPatterns", "componentStructure", "accessibility"],
+        "contextSize": "30% of total context"
+      },
+      "documentationCurator": {
+        "focus": ["storiesStructure", "storyPatterns", "usageExamples"],
+        "contextSize": "25% of total context"
+      },
+      "qualityGuardian": {
+        "focus": ["qualityGates", "crossComponentValidation", "consistency"],
+        "contextSize": "25% of total context"
+      }
+    }
+  }
+} 

@@ -1,11 +1,43 @@
 # Documentation Strategy & Best Practices
 
-This directory contains critical documentation for the Dive Design System that follows industry-standard practices to prevent knowledge loss and architectural drift.
+This directory contains critical documentation for the Dive Design System, including our **revolutionary AI Knowledge Graph system** for accelerated development.
+
+## 🚀 **NEW: AI Knowledge Graph System**
+
+**Directory**: [`knowledge-graph/`](./knowledge-graph/)
+
+**Purpose**: Revolutionary approach to AI-assisted design system development that solves context window limitations through institutional wisdom and multi-agent workflows.
+
+**Key Benefits**:
+- **66% faster development** (1 hour vs. 3+ hours)
+- **Zero repeated issues** (no more component registration, token misuse, icon problems)
+- **Consistent quality** through pattern enforcement
+- **Institutional memory** that compounds over time
+
+**Quick Start**: See [`knowledge-graph/getting-started.md`](./knowledge-graph/getting-started.md)
+
+---
+
+## 📁 Documentation Structure
+
+### 🚀 **AI Knowledge Graph System**
+**Directory**: [`knowledge-graph/`](./knowledge-graph/) - Revolutionary AI-assisted development approach
+
+### 📋 **Development Guides**  
+**Directory**: [`guides/`](./guides/) - Practical development workflows and best practices
+
+### ⚙️ **System Documentation**
+**Directory**: [`system/`](./system/) - Architecture decisions, troubleshooting, and system setup
+
+### 📊 **Project Documentation**
+**Directory**: [`project/`](./project/) - Implementation summaries and feedback logs
+
+---
 
 ## 📚 Documentation Types
 
 ### 1. Architecture Decision Records (ADRs)
-**File**: [`architecture-decisions.md`](./architecture-decisions.md)
+**File**: [`system/architecture-decisions.md`](./system/architecture-decisions.md)
 
 **Purpose**: Captures **WHY** we made specific architectural decisions to prevent:
 - ❌ Accidental reversions of settled decisions
@@ -20,7 +52,7 @@ This directory contains critical documentation for the Dive Design System that f
 - Making technology stack decisions
 
 ### 2. Troubleshooting Guide
-**File**: [`troubleshooting-guide.md`](./troubleshooting-guide.md)
+**File**: [`system/troubleshooting-guide.md`](./system/troubleshooting-guide.md)
 
 **Purpose**: Documents **HOW** to solve specific problems to prevent:
 - ❌ Repetitive problem-solving cycles

@@ -1,0 +1,353 @@
+{
+  "livingKnowledgeGraph": {
+    "meta": {
+      "version": "2.0.0",
+      "lastUpdated": "2024-12-30",
+      "purpose": "Institutional wisdom and best practices for AI agents",
+      "scope": "Troubleshooting, architecture decisions, reuse patterns, anti-patterns"
+    },
+    
+    "troubleshootingKnowledge": {
+      "criticalIssues": {
+        "componentRegistration": {
+          "issue": "Components not rendering in Canvas view",
+          "symptoms": ["Blank components", "Empty containers", "Custom element errors"],
+          "errorMessages": [
+            "Failed to execute 'define' on 'CustomElementRegistry'",
+            "dive-icon custom element not registered"
+          ],
+          "rootCause": "Component registration timing or import dependencies",
+          "solution": {
+            "pattern": "Centralized registration in .storybook/setup.ts",
+            "implementation": "import '../src/components/_Blueprint/_Blueprint';",
+            "verification": "verifyComponentRegistration() function",
+            "prevention": "Always import in setup, use registration checks"
+          },
+          "diagnosticScript": "console.log('Blueprint registered:', !!customElements.get('dive-blueprint'));",
+          "relatedIssues": ["iconSvgSprites", "designTokenAccess"]
+        },
+        
+        "iconSvgSprites": {
+          "issue": "Icon SVG sprites not working in Shadow DOM",
+          "symptoms": ["Icons not displaying", "Empty SVG elements", "Sprite warnings"],
+          "errorMessages": [
+            "SVG sprite reference not found: #icon-home",
+            "Failed to load resource: #icon-home"
+          ],
+          "rootCause": "Shadow DOM isolation prevents external sprite access",
+          "solution": {
+            "pattern": "Inline SVG with shared path definitions",
+            "antiPattern": "External sprite references with <use href=\"#icon-name\">",
+            "implementation": "_getIconPath() method with path definitions",
+            "requirements": ["Shared icon utilities", "Proper SVG attributes", "Fallback handling"]
+          },
+          "architecturalDecision": "ADR-003: Icon Rendering Strategy",
+          "prevention": "Use inline SVG approach, avoid sprite dependencies"
+        },
+        
+        "designTokenAccess": {
+          "issue": "Design tokens not accessible in Shadow DOM",
+          "symptoms": ["Fallback colors used", "Theming not working", "Token warnings"],
+          "errorMessages": [
+            "Design Token Missing: --Color-Primary-Primary-Background-default not accessible",
+            "Component using fallback values"
+          ],
+          "rootCause": "CSS custom properties not inherited into Shadow DOM",
+          "solution": {
+            "pattern": "Token inheritance at :host level",
+            "implementation": "CSS custom properties in component styles",
+            "requirements": ["Proper import order", "CSS cascade awareness", "Correct token naming"]
+          },
+          "architecturalDecision": "ADR-006: CSS Variable Pipeline Architecture"
+        }
+      },
+      
+      "warningPatterns": {
+        "tokenMisuse": {
+          "symptoms": ["Incorrect colors", "Inconsistent theming", "Design drift"],
+          "prevention": "Use semantic token validation in knowledge graph",
+          "diagnosticPattern": "Check computed styles for token values"
+        },
+        "performanceIssues": {
+          "symptoms": ["Slow re-renders", "Memory leaks", "Bundle bloat"],
+          "prevention": "Follow component architecture patterns",
+          "monitoring": "Use performance stories and diagnostics"
+        }
+      },
+      
+      "diagnosticPatterns": {
+        "quickChecklist": [
+          "npm run storybook - verify startup",
+          "Browser console - check for errors", 
+          "Component registration - verify custom elements",
+          "Token access - check computed styles"
+        ],
+        "componentDebugging": {
+          "registration": "console.log(customElements.get('dive-component'))",
+          "shadowRoot": "component?.shadowRoot inspection",
+          "tokenAccess": "getComputedStyle(component) analysis"
+        }
+      }
+    },
+    
+    "architecturalWisdom": {
+      "acceptedDecisions": {
+        "webComponents": {
+          "adr": "ADR-001",
+          "technology": "LitElement for Web Components",
+          "rationale": "Framework agnostic, native standards, Shadow DOM",
+          "consequences": ["Cross-framework compatibility", "Polyfill requirements", "Learning curve"],
+          "implications": "All new components must use LitElement pattern"
+        },
+        
+        "iconStrategy": {
+          "adr": "ADR-003",
+          "approach": "Inline SVG with Tabler Icons content",
+          "rationale": "Shadow DOM compatibility, official content quality",
+          "currentState": "Static map with 15 icons",
+          "futurePlan": "Dynamic loading from @tabler/icons package",
+          "addingNewIcons": [
+            "Find in @tabler/icons package",
+            "Copy complete SVG content",
+            "Add to _getIconSvg() method",
+            "Test in Storybook",
+            "Update documentation"
+          ]
+        },
+        
+        "tokenPipeline": {
+          "adr": "ADR-006", 
+          "architecture": "W3C-compliant CSS Variable Pipeline",
+          "performance": "1004 variables, 14ms build time, 100% resolution",
+          "namingConvention": "--{Category}-{Subcategory}-{Property}-{State}",
+          "cascadeOrder": [
+            "brand-theme/dive-theme",
+            "color-modes/{mode}",
+            "components/component", 
+            "layouts/layout"
+          ]
+        }
+      },
+      
+      "designPrinciples": {
+        "shadowDomFirst": "All components use Shadow DOM for encapsulation",
+        "tokenBased": "No hardcoded values, design tokens only",
+        "accessibilityRequired": "WCAG 2.1 AA compliance mandatory",
+        "frameworkAgnostic": "Components work across all frameworks",
+        "performanceConscious": "Bundle size and runtime performance matter"
+      }
+    },
+    
+    "reusePatterns": {
+      "componentComposition": {
+        "blueprintAsFoundation": {
+          "purpose": "Reference implementation for all patterns",
+          "demonstrates": [
+            "CSS custom property inheritance",
+            "Design token integration",
+            "State management with @state",
+            "Event handling patterns",
+            "Accessibility implementation"
+          ],
+          "reuseStrategy": "Copy Blueprint structure for new components",
+          "keyPatterns": {
+            "tokenInheritance": ":host { --component-var: var(--design-token); }",
+            "stateManagement": "@state() private _internalState",
+            "eventHandling": "Custom events with structured payloads",
+            "accessibility": "ARIA attributes and keyboard navigation"
+          }
+        },
+        
+        "iconIntegration": {
+          "purpose": "Consistent icon usage across components",
+          "pattern": "Reuse dive-icon component rather than duplicating SVG",
+          "implementation": "html`<dive-icon name=\"${this.icon}\" size=\"medium\"></dive-icon>`",
+          "benefits": ["Consistency", "Maintainability", "Performance"]
+        },
+        
+        "buttonToComplexComponents": {
+          "pattern": "Button patterns scale to complex components",
+          "reusableAspects": [
+            "Type/variant/size matrix",
+            "State management (default/hover/active/disabled)",
+            "Token usage patterns",
+            "Event handling approach"
+          ],
+          "scalingStrategy": "Adapt Button patterns to component-specific needs"
+        }
+      },
+      
+      "artifactReuse": {
+        "storyTemplates": {
+          "interactive": "Main playground with all controls",
+          "designMatrix": "Complete variant combinations",
+          "visualRegression": "Optimized for automated testing",
+          "accessibility": "ARIA and keyboard navigation demos",
+          "realWorldExamples": "Common usage patterns"
+        },
+        
+        "cssPatterns": {
+          "tokenInheritance": "Define CSS custom properties at :host level",
+          "stateImplementation": "All variants must implement all states",
+          "figmaAccuracy": "Measurements must match design exactly",
+          "transitionPattern": "transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+        },
+        
+        "typescriptPatterns": {
+          "propertyDefinitions": "@property({ type: String, reflect: true })",
+          "eventHandling": "Custom events with detail payloads",
+          "classMapUsage": "classMap for dynamic CSS classes",
+          "ifDefinedUsage": "ifDefined for optional attributes"
+        }
+      },
+      
+      "testingArtifacts": {
+        "visualRegressionMatrix": "Comprehensive variant testing",
+        "hoverStateValidation": "Critical for token misuse detection",
+        "accessibilityTesting": "WCAG compliance verification",
+        "performanceMonitoring": "Bundle size and runtime metrics"
+      }
+    },
+    
+    "antiPatterns": {
+      "componentDevelopment": {
+        "hardcodedValues": {
+          "bad": "color: #ff0000; padding: 16px;",
+          "good": "color: var(--Color-Error-Foreground-default); padding: var(--Spacing-4);",
+          "why": "Breaks theming and design consistency"
+        },
+        
+        "externalSpriteReferences": {
+          "bad": "<use href=\"#icon-name\">",
+          "good": "Inline SVG with path definitions",
+          "why": "Shadow DOM isolation prevents external references"
+        },
+        
+        "tokenMisuse": {
+          "bad": "background: var(--Color-Base-Primary-Background-default); color: var(--Color-Base-Foreground-default);",
+          "good": "background: var(--Color-Base-Primary-Background-default); color: var(--Color-Base-Primary-Foreground-default);",
+          "why": "Semantic token pairing ensures proper contrast"
+        },
+        
+        "missingStates": {
+          "bad": "Only implementing default state",
+          "good": "Implementing default, hover, active, disabled states",
+          "why": "Incomplete interaction patterns confuse users"
+        }
+      },
+      
+      "architecturalAntiPatterns": {
+        "frameworkSpecificCode": {
+          "bad": "React-specific or Vue-specific patterns",
+          "good": "Web Components with standard APIs",
+          "why": "Breaks framework-agnostic principle"
+        },
+        
+        "globalStyleDependencies": {
+          "bad": "Relying on global CSS classes",
+          "good": "Self-contained Shadow DOM styles",
+          "why": "Breaks component encapsulation"
+        },
+        
+        "nonSemanticTokenUsage": {
+          "bad": "Using Primary tokens for destructive actions",
+          "good": "Using Error tokens for destructive actions", 
+          "why": "Semantic meaning ensures consistent UX"
+        }
+      }
+    },
+    
+    "bestPracticeWorkflows": {
+      "newComponentDevelopment": {
+        "step1_research": {
+          "action": "Query knowledge graph for similar components",
+          "lookFor": ["Existing patterns", "Token requirements", "Known issues"],
+          "tools": ["Component relationship graph", "Architecture decisions"]
+        },
+        
+        "step2_foundation": {
+          "action": "Start with Blueprint component as template",
+          "copyPatterns": ["File structure", "Import statements", "CSS token setup"],
+          "adapt": "Modify for component-specific needs"
+        },
+        
+        "step3_tokenIntegration": {
+          "action": "Apply semantic tokens based on component type",
+          "validate": "Use token expert knowledge for validation",
+          "avoid": "Check anti-patterns for forbidden combinations"
+        },
+        
+        "step4_storyDevelopment": {
+          "action": "Reuse story templates from Button component",
+          "required": ["Interactive", "Design Matrix", "Visual Regression"],
+          "adapt": "Component-specific examples and edge cases"
+        },
+        
+        "step5_qualityValidation": {
+          "action": "Run comprehensive quality checks",
+          "checks": ["Token usage", "Accessibility", "Performance", "Cross-component consistency"],
+          "tools": ["Diagnostic scripts", "Visual regression tests"]
+        }
+      },
+      
+      "issueResolution": {
+        "step1_symptomIdentification": {
+          "action": "Match symptoms to known issue patterns",
+          "resources": ["Troubleshooting knowledge", "Error message mapping"]
+        },
+        
+        "step2_diagnostics": {
+          "action": "Run appropriate diagnostic scripts",
+          "patterns": ["Component registration check", "Token access verification", "Shadow DOM inspection"]
+        },
+        
+        "step3_solutionApplication": {
+          "action": "Apply proven solution patterns",
+          "verify": "Test fix matches expected behavior",
+          "prevent": "Implement prevention strategies"
+        },
+        
+        "step4_knowledgeUpdate": {
+          "action": "Update living documents with new insights",
+          "update": ["Troubleshooting guide", "Architecture decisions", "Knowledge graph"]
+        }
+      }
+    },
+    
+    "agentOptimization": {
+      "contextDistribution": {
+        "troubleshootingExpert": {
+          "focus": ["Known issues", "Diagnostic patterns", "Solution strategies"],
+          "contextSize": "15% - Focused problem-solving knowledge"
+        },
+        
+        "architecturalAdvisor": {
+          "focus": ["ADRs", "Design principles", "Technology decisions"],
+          "contextSize": "20% - Strategic decision guidance"
+        },
+        
+        "reuseSpecialist": {
+          "focus": ["Component patterns", "Artifact templates", "Best practices"],
+          "contextSize": "25% - Pattern recognition and reuse"
+        },
+        
+        "qualityGuardian": {
+          "focus": ["Anti-patterns", "Validation rules", "Prevention strategies"],
+          "contextSize": "15% - Quality enforcement"
+        },
+        
+        "componentArchitect": {
+          "focus": ["Implementation patterns", "Token integration", "Structure"],
+          "contextSize": "25% - Core development"
+        }
+      },
+      
+      "queryPatterns": {
+        "beforeStarting": "Query for similar components and known issues",
+        "duringDevelopment": "Validate against anti-patterns and architectural decisions",
+        "beforeFinishing": "Check quality gates and reuse opportunities",
+        "afterCompletion": "Update knowledge graph with new patterns"
+      }
+    }
+  }
+} 
