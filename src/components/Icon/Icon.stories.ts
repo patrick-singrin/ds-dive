@@ -81,6 +81,30 @@ Icons are primitive visual elements that serve as building blocks for molecules 
         type: { summary: 'base | primary | success | warning | error | info' },
         defaultValue: { summary: 'base' }
       }
+    },
+    interactive: {
+      control: { type: 'boolean' },
+      description: 'Whether the icon is interactive (clickable)',
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: 'false' }
+      }
+    },
+    ariaLabel: {
+      control: { type: 'text' },
+      description: 'ARIA label for meaningful icons',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'undefined' }
+      }
+    },
+    ariaHidden: {
+      control: { type: 'text' },
+      description: 'Whether icon is hidden from screen readers',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'undefined' }
+      }
     }
   }
 };
@@ -97,12 +121,18 @@ export const Default: Story = {
       name="${args.name || 'check'}"
       size="${args.size || 'medium'}"
       color="${args.color || 'base'}"
+      ?interactive="${args.interactive || false}"
+      aria-label="${args.ariaLabel || undefined}"
+      aria-hidden="${args.ariaHidden || undefined}"
     ></dive-icon>
   `,
   args: {
-    name: 'check',
-    size: 'medium',
-    color: 'base'
+    name: 'check' as const,
+    size: 'medium' as const,
+    color: 'base' as const,
+    interactive: false,
+    ariaLabel: undefined,
+    ariaHidden: undefined
   }
 };
 

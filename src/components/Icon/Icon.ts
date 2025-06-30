@@ -234,11 +234,7 @@ export class DiveIcon extends LitElement {
       this.loading = true;
       this.error = false;
 
-      // Dynamically import the SVG from the official package
-      const iconPath = `@tabler/icons/icons/outline/${this.name}.svg`;
-      
-      // For now, use a fallback approach with known icons
-      // In a real implementation, you'd use a bundler to handle this
+      // Get SVG content from our static map
       const svgContent = await this._getIconSvg(this.name);
       
       if (svgContent) {
@@ -249,7 +245,7 @@ export class DiveIcon extends LitElement {
         throw new Error(`Icon "${this.name}" not found`);
       }
     } catch (error) {
-      console.error('Failed to load icon:', error);
+      console.error('Failed to load icon:', this.name, error);
       this.error = true;
       this.loading = false;
       
@@ -549,18 +545,19 @@ export class DiveIcon extends LitElement {
       return html`<div class="error-fallback">!</div>`;
     }
 
-    if (this.loading) {
+    if (this.loading || !this._svgContent) {
       return html`<div class="icon-container">Loading...</div>`;
     }
 
     return html`
       <div 
         class="icon-container"
-        aria-hidden=${this.ariaHidden || 'false'}
+        aria-hidden=${ifDefined(this.ariaHidden)}
         aria-label=${ifDefined(this.ariaLabel)}
         role=${this.ariaLabel ? 'img' : 'presentation'}
-        @click=${this._handleClick}
-        @keydown=${this._handleKeyDown}
+        @click=${this.interactive ? this._handleClick : undefined}
+        @keydown=${this.interactive ? this._handleKeyDown : undefined}
+        tabindex=${this.interactive ? '0' : undefined}
       >
         ${unsafeHTML(this._svgContent)}
       </div>

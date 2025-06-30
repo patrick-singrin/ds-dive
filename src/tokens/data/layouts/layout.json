@@ -156,55 +156,55 @@
   "Spacing": {
     "0": {
       "$type": "number",
-      "$value": "{Space.0}"
+      "$value": "{Space.1}"
     },
     "1": {
       "$type": "number",
-      "$value": "{Space.6}"
+      "$value": "{Space.2}"
     },
     "2": {
       "$type": "number",
-      "$value": "{Space.8}"
+      "$value": "{Space.3}"
     },
     "3": {
       "$type": "number",
-      "$value": "{Space.10}"
+      "$value": "{Space.4}"
     },
     "4": {
       "$type": "number",
-      "$value": "{Space.11}"
+      "$value": "{Space.5}"
     },
     "5": {
       "$type": "number",
-      "$value": "{Space.12}"
+      "$value": "{Space.6}"
     },
     "6": {
       "$type": "number",
-      "$value": "{Space.13}"
+      "$value": "{Space.7}"
     },
     "7": {
       "$type": "number",
-      "$value": "{Space.14}"
+      "$value": "{Space.8}"
     },
     "8": {
       "$type": "number",
-      "$value": "{Space.15}"
+      "$value": "{Space.9}"
     },
     "9": {
       "$type": "number",
-      "$value": "{Space.16}"
+      "$value": "{Space.10}"
     },
     "10": {
       "$type": "number",
-      "$value": "{Space.17}"
+      "$value": "{Space.11}"
     },
     "11": {
       "$type": "number",
-      "$value": "{Space.18}"
+      "$value": "{Space.12}"
     },
     "12": {
       "$type": "number",
-      "$value": "{Space.19}"
+      "$value": "{Space.13}"
     }
   },
   "Border": {

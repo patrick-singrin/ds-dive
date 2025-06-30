@@ -250,11 +250,6 @@ class CSSVariableGenerator {
     // Main index file
     const mainIndexContent = `/* Auto-generated design tokens */
 @import '../../assets/fonts/fonts.css';
-@import './brand-theme.css';
-@import './light-mode.css';
-@import './dark-mode.css';
-@import './hc-light-mode.css';
-@import './hc-dark-mode.css';
 @import './dive-theme/index.css';
 @import '../../styles/global.css';
 `;

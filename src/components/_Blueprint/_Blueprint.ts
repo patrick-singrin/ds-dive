@@ -53,15 +53,18 @@ export class DiveBlueprint extends LitElement {
       --blueprint-border-active: var(--Color-Primary-Primary-Border-active, transparent);
       --blueprint-border-disabled: var(--Color-Base-Border-disabled, #c7cad1);
       
-      /* Spacing tokens */
-      --blueprint-padding-small: var(--Spacing-2, 8px) var(--Spacing-3, 10px);
-      --blueprint-padding-medium: var(--Spacing-3, 10px) var(--Spacing-4, 12px);
-      --blueprint-padding-large: var(--Spacing-4, 12px) var(--Spacing-5, 16px);
+      /* Spacing tokens - More reasonable button padding */
+      --blueprint-padding-small: calc(var(--Spacing-2, 8) * 1px) calc(var(--Spacing-4, 12) * 1px);
+      --blueprint-padding-medium: calc(var(--Spacing-3, 10) * 1px) calc(var(--Spacing-5, 16) * 1px);
+      --blueprint-padding-large: calc(var(--Spacing-4, 12) * 1px) calc(var(--Spacing-6, 20) * 1px);
       
-      --blueprint-gap: var(--Spacing-2, 8px);
+      --blueprint-gap: calc(var(--Spacing-2, 8) * 1px);
       
       /* Border radius */
-      --blueprint-border-radius: var(--border-border-radius-md, 8px);
+      --blueprint-border-radius: calc(var(--border-border-radius-md, 8) * 1px);
+      
+      /* Typography fallbacks */
+      --blueprint-font-family: var(--font-family-primary, 'Atkinson Hyperlegible Next', -apple-system, BlinkMacSystemFont, sans-serif);
       
       /* Typography */
       --blueprint-font-size-small: 14px;
@@ -97,10 +100,11 @@ export class DiveBlueprint extends LitElement {
       
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       
+      /* Typography */
+      font-family: var(--blueprint-font-family);
+      
       /* Remove default button styles */
-      border: none;
       outline: none;
-      font-family: inherit;
     }
 
     /* Size variants */

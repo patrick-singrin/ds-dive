@@ -1037,208 +1037,236 @@ Object.keys(customElements)
 **Last Updated**: 2025 | **Next Review**: When new issues are discovered  
 **Maintenance Note**: Add new issues immediately when discovered and resolved 
 
-### Issue #012: CSS Variable Names with Spaces Causing PostCSS Errors
+### Issue #012: Blueprint Component Missing Styling (Comprehensive Fix)
 
-**Symptoms**:
-- Storybook fails to start with PostCSS parsing errors
-- Error message: `[postcss] Unknown word Background-default`
-- CSS build fails with syntax errors
+**Date**: 2025-01-30  
+**Severity**: High  
+**Components Affected**: Blueprint component, CSS Variable Pipeline  
 
-**Error Messages**:
-```
-[postcss] postcss-import: component.css:18:21: Unknown word Background-default
---Color-Base-Subtle Background-default: #1d222c;
-                    ^
-```
+### Problem Description
+The Blueprint component was displaying without proper styling:
+- Missing padding and spacing
+- No border radius
+- Atkinson Hyperlegible Next font not loading
+- Excessive button padding when initially fixed
 
-**Root Cause Analysis**:
-The component token JSON files contain keys with spaces (e.g., `"Subtle Background"`, `"Primary Foreground"`) which were being directly converted to CSS variable names without proper sanitization. CSS variable names cannot contain spaces and must use hyphens instead.
+### Root Cause Analysis
+This was a multi-layered issue involving several system components:
 
-**Diagnostic Steps**:
-```bash
-# Check generated CSS for invalid variable names
-grep "Background-default\|Foreground-default" src/tokens/css-vars/dive-theme/component.css
+1. **Missing Font CSS Variables**: Font faces were defined but not as CSS custom properties
+2. **Incorrect Spacing Token Mapping**: JSON token mappings didn't match Figma specifications
+3. **CSS Import Errors**: Build script generating incorrect imports to deleted files
+4. **Component Implementation**: Blueprint component had CSS override issues
 
-# Look for spaces in CSS variable names
-grep -E "\-\-[a-zA-Z]+ [a-zA-Z]+" src/tokens/css-vars/**/*.css
+### Investigation Process
 
-# Test token generation with dry run
-npm run build:tokens:dry
-```
+#### Step 1: Initial Diagnosis
+- **Symptom**: Blueprint component rendered with no padding, border radius, or custom font
+- **First Check**: Verified CSS custom properties were being imported correctly
+- **Discovery**: Multiple issues beyond simple styling
 
-**Solution**:
-Updated the `toCssVarName()` method in both `CSSFormatter` and `TokenResolver` to properly sanitize token path segments:
+#### Step 2: Font Integration Issue
+- **Problem**: Font faces defined but no CSS variables available
+- **Location**: `src/assets/fonts/fonts.css`
+- **Missing**: CSS custom properties for font-family tokens
 
-```typescript
-public static toCssVarName(path: string[]): string {
-  const cleanPath = path.map(segment => 
-    segment.replace(/\s+/g, '-')  // Replace spaces with hyphens
-           .replace(/[^a-zA-Z0-9-_]/g, '-')  // Replace invalid chars
-           .replace(/-+/g, '-')  // Replace multiple hyphens with single
-           .replace(/^-|-$/g, '')  // Remove leading/trailing hyphens
-  );
-  return `--${cleanPath.join('-')}`;
+#### Step 3: Spacing Token Pipeline Issue  
+- **Problem**: Generated CSS showed wrong spacing values
+- **Figma Expected**: 2, 4, 8, 10, 12, 16px
+- **Generated Output**: 0, 16, 24, 32, 40, 48px
+- **Root Cause**: Incorrect token mapping in `src/tokens/data/layouts/layout.json`
+
+#### Step 4: Build Script CSS Import Issue
+- **Problem**: Build script generating imports to deleted CSS files
+- **Error**: `@import './brand-theme.css'` (file deleted)
+- **Location**: `scripts/generate-css-variables.ts` hardcoded wrong imports
+
+### Complete Fix Implementation
+
+#### Fix 1: Font CSS Variables Integration
+**File**: `src/assets/fonts/fonts.css`
+
+Added CSS custom properties after font-face declarations:
+```css
+/* CSS Custom Properties for Design Token Integration */
+:root {
+  /* Font Family Tokens */
+  --font-family-primary: 'Atkinson Hyperlegible Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+  
+  /* Font Weight Tokens */
+  --font-weight-extra-light: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+  
+  /* Line Height and Letter Spacing Tokens */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
 }
 ```
 
-**Fixed Examples**:
-- `"Subtle Background"` → `--Color-Base-Subtle-Background-default`
-- `"Primary Foreground"` → `--Color-Primary-Primary-Foreground-default`
+#### Fix 2: Spacing Token Mapping Correction
+**File**: `src/tokens/data/layouts/layout.json`
 
-**Prevention**:
-- Token JSON keys should avoid spaces in production systems
-- CSS variable name generation should always sanitize input
-- Add validation step to detect invalid CSS variable names during build
-
-**Related Issues**: None
-
----
-
-### Issue #013: CSS Variable Pipeline Setup Complete
-
-**Symptoms**:
-- CSS Variable Pipeline is now fully operational
-- 1004 variables across all modes working correctly
-- Components use semantic tokens exclusively
-
-**System Status**:
-✅ **Components**: Icon and Blueprint components use CSS variables only
-✅ **Color Categories**: 6 official categories (Base, Primary, Success, Warning, Error, Info)
-✅ **Mode Support**: 4 modes (Light, Dark, High Contrast Light, High Contrast Dark)
-✅ **CSS Files**: Clean structure with proper mode selectors
-✅ **Documentation**: Complete usage guides and architecture documentation
-
-**Generated Files**:
-```
-src/tokens/css-vars/
-├── index.css                    # Main import file
-└── dive-theme/
-    ├── index.css               # Theme imports
-    ├── component.css           # All 4 modes with 251 variables each
-    └── layout.css              # Layout tokens for all modes
+**Before (Wrong Mapping)**:
+```json
+"Spacing": {
+  "0": { "$type": "number", "$value": "{Space.0}" },    // 0
+  "1": { "$type": "number", "$value": "{Space.6}" },    // 16
+  "2": { "$type": "number", "$value": "{Space.8}" },    // 24
+  "3": { "$type": "number", "$value": "{Space.10}" },   // 32
+  "4": { "$type": "number", "$value": "{Space.11}" },   // 40
+  "5": { "$type": "number", "$value": "{Space.12}" }    // 48
+}
 ```
 
-**Performance Metrics**:
-- **Processing Time**: 13ms for complete pipeline
-- **Variables Generated**: 1,004 total across all modes
-- **Files Written**: 4 CSS files + index files
-- **Success Rate**: 100% (0 unresolved tokens)
-- **Cache Efficiency**: 980 cache entries
+**After (Correct Mapping)**:
+```json
+"Spacing": {
+  "0": { "$type": "number", "$value": "{Space.1}" },    // 2
+  "1": { "$type": "number", "$value": "{Space.2}" },    // 4
+  "2": { "$type": "number", "$value": "{Space.3}" },    // 8
+  "3": { "$type": "number", "$value": "{Space.4}" },    // 10
+  "4": { "$type": "number", "$value": "{Space.5}" },    // 12
+  "5": { "$type": "number", "$value": "{Space.6}" }     // 16
+}
+```
 
-**Mode Selectors**:
+#### Fix 3: Build Script CSS Import Correction
+**File**: `scripts/generate-css-variables.ts`
+
+**Before (Generating Wrong Imports)**:
+```typescript
+const mainIndexContent = `/* Auto-generated design tokens */
+@import '../../assets/fonts/fonts.css';
+@import './brand-theme.css';
+@import './light-mode.css';
+@import './dark-mode.css';
+@import './hc-light-mode.css';
+@import './hc-dark-mode.css';
+@import './dive-theme/index.css';
+@import '../../styles/global.css';
+`;
+```
+
+**After (Correct Imports)**:
+```typescript
+const mainIndexContent = `/* Auto-generated design tokens */
+@import '../../assets/fonts/fonts.css';
+@import './dive-theme/index.css';
+@import '../../styles/global.css';
+`;
+```
+
+#### Fix 4: Blueprint Component Styling Updates
+**File**: `src/components/_Blueprint/_Blueprint.ts`
+
+**Font Integration**:
 ```css
-:root { /* Light mode variables */ }
-[data-mode="dark-mode"] { /* Dark mode variables */ }
-[data-mode="hc-light-mode"] { /* High contrast light variables */ }
-[data-mode="hc-dark-mode"] { /* High contrast dark variables */ }
+/* Typography fallbacks */
+--blueprint-font-family: var(--font-family-primary, 'Atkinson Hyperlegible Next', -apple-system, BlinkMacSystemFont, sans-serif);
+
+.blueprint {
+  /* Typography */
+  font-family: var(--blueprint-font-family);
+}
 ```
 
-**Next Steps**: System is ready for production use and component development.
+**Spacing Token Usage** (Final Values):
+```css
+/* Spacing tokens - More reasonable button padding */
+--blueprint-padding-small: calc(var(--Spacing-2, 8) * 1px) calc(var(--Spacing-4, 12) * 1px);     // 8px 12px
+--blueprint-padding-medium: calc(var(--Spacing-3, 10) * 1px) calc(var(--Spacing-5, 16) * 1px);   // 10px 16px
+--blueprint-padding-large: calc(var(--Spacing-4, 12) * 1px) calc(var(--Spacing-6, 20) * 1px);    // 12px 20px
 
---- 
-
-### Issue #015: Storybook Iframe Loading Blocked by Security Headers
-
-**Symptoms**:
-- Storybook loads but stories don't display properly
-- Console errors about X-Frame-Options blocking iframe loading
-- German/localized error messages in browser console
-- Stories appear blank or fail to load in Storybook Canvas
-
-**Error Messages**:
-```
-Feature Policy: Unbekannte Funktionalität (Feature) "clipboard-write" wird ignoriert.
-Die "X-Frame-Options"-Direktive "deny" verbietet das Laden von "https://your-site.netlify.app/iframe.html?viewMode=story&id=*" in einem Frame.
-X-Frame-Options: DENY prevents loading iframe.html in a frame
+--blueprint-gap: calc(var(--Spacing-2, 8) * 1px);
+--blueprint-border-radius: calc(var(--border-border-radius-md, 8) * 1px);
 ```
 
-**Root Cause Analysis**:
-1. **Storybook Architecture**: Storybook uses iframes to isolate and display stories
-2. **Security Headers**: `X-Frame-Options: DENY` prevents iframe loading entirely
-3. **Overly Restrictive**: Security headers applied to all files including Storybook's iframe.html
+**Removed CSS Override Issue**:
+- Removed `border: none;` that was preventing borders from showing
+- Added proper fallback values using `calc()` for unitless design tokens
 
-**Diagnostic Steps**:
+### Verification Process
+
+#### Step 1: Token Pipeline Verification
 ```bash
-# Check Netlify headers configuration
-grep -A 10 "X-Frame-Options" netlify.toml
-
-# Test iframe loading in browser console
-const iframe = document.createElement('iframe');
-iframe.src = '/iframe.html';
-document.body.appendChild(iframe);
-// Should not throw frame loading errors
+npm run build:tokens
 ```
 
-**Solution**:
+**Expected Output**:
+- Total Variables: 1004
+- Files Written: 4  
+- Processing Time: ~13ms
+- Unresolved Tokens: 0
 
-**Update `netlify.toml` configuration**:
-```toml
-[build]
-  command = "npm run build"
-  publish = "storybook-static"
-
-[build.environment]
-  NODE_VERSION = "18"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-
-[[headers]]
-  for = "/iframe.html"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-
-[[headers]]
-  for = "*.html"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-
-[[headers]]
-  for = "*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "*.woff2"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
+**Verified Generated Values**:
+```css
+:root {
+  --Spacing-0: 2;
+  --Spacing-1: 4;
+  --Spacing-2: 8;
+  --Spacing-3: 10;    /* Used for button padding */
+  --Spacing-4: 12;
+  --Spacing-5: 16;    /* Used for button padding */
+}
 ```
 
-**Key Changes**:
-- **Removed**: `X-Frame-Options: DENY` from global headers
-- **Added**: `X-Frame-Options: SAMEORIGIN` for HTML files
-- **Specific**: Allow iframe loading from same origin (required for Storybook)
-
-**About Clipboard Warning**:
-The `clipboard-write` feature policy warning is non-critical:
-- **Source**: Storybook's copy-to-clipboard functionality
-- **Impact**: No functional issues, just a browser warning
-- **Action**: Can be safely ignored, doesn't affect story functionality
-
-**Verification**:
+#### Step 2: Storybook Integration Test
 ```bash
-# Deploy updated configuration
-git add netlify.toml
-git commit -m "fix: Update Netlify headers for Storybook iframe compatibility"
-git push origin main
-
-# Check deployed site
-# Stories should now load properly in Storybook Canvas
+npm run storybook
 ```
 
-**Prevention**:
-- Test security headers with Storybook's iframe architecture
-- Use `SAMEORIGIN` instead of `DENY` for documentation sites
-- Include Storybook-specific header requirements in deployment configuration
+**Expected Results**:
+- No CSS import errors
+- Blueprint component renders with:
+  - Atkinson Hyperlegible Next font
+  - Proper padding (10px top/bottom, 16px left/right for medium)
+  - 8px border radius
+  - All design token colors working
 
-**Related Issues**: #014 (Netlify Build Failures)
+### Final Implementation Details
+
+#### CSS Variable Pipeline Architecture
+```
+src/tokens/data/brand-theme/dive-theme.json
+  └── Space tokens: 0→0, 1→2, 2→4, 3→8, 4→10, 5→12, 6→16...
+
+src/tokens/data/layouts/layout.json  
+  └── Spacing mapping: 0→Space.1, 1→Space.2, 2→Space.3...
+
+scripts/generate-css-variables.ts
+  └── Processes and generates: css-vars/dive-theme/component.css + layout.css
+
+src/tokens/css-vars/index.css
+  └── Imports: fonts.css + dive-theme/index.css + global.css
+```
+
+#### Button Padding Specifications
+| Size | Top/Bottom | Left/Right | Design Tokens Used |
+|------|------------|------------|-------------------|
+| Small | 8px | 12px | `Spacing-2` + `Spacing-4` |
+| Medium | 10px | 16px | `Spacing-3` + `Spacing-5` |
+| Large | 12px | 20px | `Spacing-4` + `Spacing-6` |
+
+### Prevention Measures
+
+1. **Token Mapping Validation**: Always verify generated CSS values match Figma
+2. **Build Script Testing**: Test CSS generation after any script changes
+3. **Font Integration Checklist**: Ensure both font-faces AND CSS variables are defined
+4. **Import Path Verification**: Check that all CSS imports reference existing files
+
+### Related Documentation
+- [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)
+- [Architecture Decision Records](./architecture-decisions.md) - ADR-003: Icon Rendering Strategy
+- [Issue #011: Icons Not Rendering](./troubleshooting-guide.md#issue-011)
 
 --- 

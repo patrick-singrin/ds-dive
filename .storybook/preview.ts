@@ -1,5 +1,4 @@
 import type { Preview } from '@storybook/web-components';
-import { withThemeByDataAttribute } from '@storybook/addon-themes';
 
 // Import design tokens
 import '../src/tokens/css-vars/index.css';
@@ -27,19 +26,17 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: 'light',
+      default: 'base',
       values: [
         {
-          name: 'light',
-          value: '#ffffff',
+          name: 'base',
+          value: 'var(--Color-Base-Background-default)',
+          title: 'Base Background (Design Token)'
         },
         {
-          name: 'dark',
-          value: '#1d222c',
-        },
-        {
-          name: 'surface',
-          value: '#ecedf0',
+          name: 'subtle',
+          value: 'var(--Color-Base-Subtle-Background-default)', 
+          title: 'Subtle Background (Design Token)'
         }
       ],
     },
@@ -124,37 +121,37 @@ const preview: Preview = {
     },
   },
   globalTypes: {
-    theme: {
+    designTheme: {
       name: 'Theme',
-      description: 'Global theme for components',
-      defaultValue: 'light',
+      description: 'Choose design theme variant',
+      defaultValue: 'dive-theme',
       toolbar: {
         icon: 'paintbrush',
         items: [
-          { value: 'light', title: 'Light', left: '🌞' },
-          { value: 'dark', title: 'Dark', left: '🌙' },
-          { value: 'hc-light', title: 'High Contrast Light', left: '🔆' },
-          { value: 'hc-dark', title: 'High Contrast Dark', left: '🌚' },
+          { value: 'dive-theme', title: 'Dive Theme' },
+          // Future themes will be added here:
+          // { value: 'enterprise-theme', title: 'Enterprise Theme' },
+          // { value: 'consumer-theme', title: 'Consumer Theme' },
         ],
         showName: true,
+        dynamicTitle: true,
       },
     },
-    iconTheme: {
-      name: 'Icon Color',
-      description: 'Global icon color theme',
-      defaultValue: 'base',
+    colorMode: {
+      name: 'Mode',
+      description: 'Choose color mode for the selected theme',
+      defaultValue: 'light-mode',
       toolbar: {
-        icon: 'component',
+        icon: 'contrast',
         items: [
-          { value: 'base', title: 'Base Icons' },
-          { value: 'primary', title: 'Primary Icons' },
-          { value: 'success', title: 'Success Icons' },
-          { value: 'warning', title: 'Warning Icons' },
-          { value: 'error', title: 'Error Icons' },
-          { value: 'info', title: 'Info Icons' }
+          { value: 'light-mode', title: 'Light Mode' },
+          { value: 'dark-mode', title: 'Dark Mode' },
+          { value: 'hc-light-mode', title: 'High Contrast Light' },
+          { value: 'hc-dark-mode', title: 'High Contrast Dark' },
         ],
-        showName: true
-      }
+        showName: true,
+        dynamicTitle: true,
+      },
     },
     density: {
       name: 'Density',
@@ -186,16 +183,20 @@ const preview: Preview = {
     }
   },
   decorators: [
-    withThemeByDataAttribute({
-      themes: {
-        light: 'light',
-        dark: 'dark',
-        'hc-light': 'hc-light',
-        'hc-dark': 'hc-dark',
-      },
-      defaultTheme: 'light',
-      attributeName: 'data-theme',
-    }),
+    // Unified Theme and Color Mode decorator
+    (story, context) => {
+      const { designTheme, colorMode } = context.globals;
+      
+      // Apply attributes to the document root for the iframe context
+      // Use setTimeout to ensure it applies after the story is rendered
+      setTimeout(() => {
+        const root = document.documentElement;
+        root.setAttribute('data-theme', designTheme || 'dive-theme');
+        root.setAttribute('data-mode', colorMode || 'light-mode');
+      }, 0);
+      
+      return story();
+    },
   ],
 };
 

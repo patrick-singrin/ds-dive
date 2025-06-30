@@ -241,10 +241,11 @@ Examples:
 | 003 | Icon Rendering Strategy | ✅ Accepted | 15 icons with official SVG content |
 | 004 | Shadow DOM Usage | ✅ Accepted | Style encapsulation |
 | 005 | Icon Usage Guidelines | ✅ Accepted | Standardized icon patterns |
-| 006 | CSS Variable Pipeline | ✅ Accepted | Enterprise-grade token system |
+| 006 | CSS Variable Pipeline | ⚠️ Superseded | Enterprise-grade token system |
 | 007 | Typography System | ✅ Accepted | Accessible font foundation |
 | 008 | Atomic Design Architecture | ✅ Accepted | Component hierarchy and organization |
 | 009 | Deployment Strategy | ✅ Accepted | Netlify hosting with optimization |
+| 010 | CSS Pipeline Optimization | ✅ Accepted | Fixed spacing tokens and component styling |
 
 ---
 
@@ -401,6 +402,279 @@ Examples:
 
 ---
 
+## ADR-010: CSS Variable Pipeline Optimization and Fixes
+
+**Date**: 2025-01-30  
+**Status**: Accepted  
+**Context**: Blueprint Component Styling Issues Resolution  
+**Decision**: Implement comprehensive fixes to the CSS Variable Pipeline to resolve styling issues and ensure proper token-to-CSS generation
+
+### Problem Statement
+The CSS Variable Pipeline had multiple issues preventing proper component styling:
+
+1. **Spacing Token Mismatch**: Generated CSS values didn't match Figma specifications
+2. **Font Integration Gap**: Font faces defined but CSS variables missing  
+3. **Build Script Issues**: Generating imports to non-existent files
+4. **Component Integration**: Components not properly using design tokens
+
+### Implementation Strategy
+
+#### 1. Token Mapping Correction
+**Source**: `src/tokens/data/layouts/layout.json`
+
+**Fixed Mapping Logic**:
+```json
+// Figma: 2, 4, 8, 10, 12, 16px
+// Before: Space.0, Space.6, Space.8, Space.10, Space.11, Space.12  
+// After: Space.1, Space.2, Space.3, Space.4, Space.5, Space.6
+
+"Spacing": {
+  "0": { "$value": "{Space.1}" },  // 2px
+  "1": { "$value": "{Space.2}" },  // 4px  
+  "2": { "$value": "{Space.3}" },  // 8px
+  "3": { "$value": "{Space.4}" },  // 10px ← Button padding
+  "4": { "$value": "{Space.5}" },  // 12px
+  "5": { "$value": "{Space.6}" }   // 16px ← Button padding
+}
+```
+
+#### 2. Font CSS Variable Integration  
+**Source**: `src/assets/fonts/fonts.css`
+
+**Added CSS Custom Properties**:
+```css
+:root {
+  --font-family-primary: 'Atkinson Hyperlegible Next', [fallbacks];
+  --font-weight-extra-light: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+}
+```
+
+#### 3. Build Script Optimization
+**Source**: `scripts/generate-css-variables.ts`
+
+**Fixed Index Generation**:
+```typescript
+// Removed references to deleted files
+const mainIndexContent = `
+@import '../../assets/fonts/fonts.css';
+@import './dive-theme/index.css';
+@import '../../styles/global.css';
+`;
+```
+
+#### 4. Component Token Usage
+**Source**: `src/components/_Blueprint/_Blueprint.ts`
+
+**Design Token Integration**:
+```css
+:host {
+  --blueprint-font-family: var(--font-family-primary, [fallbacks]);
+  --blueprint-padding-medium: calc(var(--Spacing-3, 10) * 1px) calc(var(--Spacing-5, 16) * 1px);
+  --blueprint-border-radius: calc(var(--border-border-radius-md, 8) * 1px);
+}
+```
+
+### Consequences
+
+#### Positive
+- ✅ **Spacing tokens match Figma exactly** (2, 4, 8, 10, 12, 16px)
+- ✅ **Button padding uses proper design tokens** (10px/16px for medium)
+- ✅ **Font integration complete** with CSS variables and fallbacks
+- ✅ **Build process reliable** - no more broken imports
+- ✅ **Components use semantic tokens** exclusively
+
+#### Considerations
+- **Build dependency**: Components now require token generation to be run first
+- **Calc() usage**: Needed for unitless design tokens (adds slight complexity)
+- **Token validation**: Should verify generated values match Figma in future
+
+### Performance Impact
+- **Build time**: 13ms for complete token pipeline (1004 variables)
+- **CSS size**: Optimized output with no redundant imports
+- **Runtime**: No performance impact, CSS variables are native
+
+### Button Padding Specifications
+| Size | Top/Bottom | Left/Right | Design Tokens Used |
+|------|------------|------------|-------------------|
+| Small | 8px | 12px | `Spacing-2` + `Spacing-4` |
+| Medium | 10px | 16px | `Spacing-3` + `Spacing-5` |
+| Large | 12px | 20px | `Spacing-4` + `Spacing-6` |
+
+### Future Enhancements
+1. **Automated validation**: Compare generated tokens against Figma API
+2. **Unit handling**: Consider adding units to base tokens to eliminate calc()
+3. **Component auditing**: Ensure all components use design tokens exclusively
+
+### Related Decisions
+- **ADR-003**: Icon Rendering Strategy  
+- **ADR-005**: Icon Usage Guidelines
+- **ADR-006**: CSS Variable Pipeline (superseded)
+- **ADR-007**: Typography System
+
+### Documentation
+- [Issue #012: Blueprint Component Missing Styling](./troubleshooting-guide.md#issue-012)
+- [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)
+
+---
+
+## ADR-011: Icon Component Storybook Integration
+
+**Date**: 2025-01-30
+**Status**: Accepted
+**Context**: Icon component rendering issues in Storybook environment
+**Decision**: Implement robust component lifecycle and story configuration patterns for reliable Storybook integration
+
+### Problem Statement
+Icon components were experiencing rendering issues specifically in Storybook:
+- Icons not appearing despite proper component registration
+- Loading states showing indefinitely without transitioning to rendered content
+- Component lifecycle not properly triggering in Storybook's rendering context
+
+### Root Cause Analysis
+
+#### Component Lifecycle Issues
+- `connectedCallback()` and `updated()` methods not properly handling Storybook's reactive property updates
+- Icon loading logic not completing due to async timing issues
+- Render method logic not accounting for all state combinations
+
+#### Story Configuration Gaps
+- Missing comprehensive args configuration for all component properties
+- Incomplete attribute binding in story templates
+- Lack of debugging capabilities for development troubleshooting
+
+### Implementation Solution
+
+#### Component Lifecycle Robustness
+```typescript
+// Ensure icon loading triggers on both initial connection and property changes
+connectedCallback() {
+  super.connectedCallback();
+  if (this.name) {
+    this._loadIcon();
+  }
+}
+
+updated(changedProperties: Map<string | number | symbol, unknown>) {
+  super.updated(changedProperties);
+  if (changedProperties.has('name')) {
+    this._loadIcon();
+  }
+}
+
+// Comprehensive render state handling
+render() {
+  if (!this.name) {
+    return html`<div class="error-fallback">?</div>`;
+  }
+  
+  if (this.error) {
+    return html`<div class="error-fallback">!</div>`;
+  }
+  
+  if (this.loading || !this._svgContent) {
+    return html`<div class="icon-container">Loading...</div>`;
+  }
+  
+  return html`
+    <div class="icon-container" ...>
+      ${unsafeHTML(this._svgContent)}
+    </div>
+  `;
+}
+```
+
+#### Complete Story Configuration
+```typescript
+// Comprehensive argTypes for all component properties
+argTypes: {
+  name: { control: { type: 'select' }, options: [...] },
+  size: { control: { type: 'select' }, options: [...] },
+  color: { control: { type: 'select' }, options: [...] },
+  interactive: { control: { type: 'boolean' } },
+  ariaLabel: { control: { type: 'text' } },
+  ariaHidden: { control: { type: 'text' } }
+}
+
+// Complete attribute binding in story templates
+render: (args) => html`
+  <dive-icon
+    name="${args.name || 'check'}"
+    size="${args.size || 'medium'}"
+    color="${args.color || 'base'}"
+    ?interactive="${args.interactive || false}"
+    aria-label="${args.ariaLabel || undefined}"
+    aria-hidden="${args.ariaHidden || undefined}"
+  ></dive-icon>
+`
+```
+
+### Development Methodology
+
+#### Debug-First Approach
+1. **Temporary Logging**: Add comprehensive logging during issue investigation
+2. **Standalone Testing**: Create isolated HTML test files for component verification
+3. **State Inspection**: Monitor component lifecycle and property changes
+4. **Production Cleanup**: Remove debug code once issues are resolved
+
+#### Testing Strategy
+- Test components in both Storybook and standalone environments
+- Verify component registration and lifecycle events
+- Validate proper SVG content loading and rendering
+- Ensure accessibility attributes work correctly
+
+### Consequences
+
+#### Positive
+- ✅ **Reliable Storybook Integration**: Icons render consistently across all stories
+- ✅ **Robust Error Handling**: Clear fallback states for debugging
+- ✅ **Complete Property Coverage**: All component features accessible in Storybook
+- ✅ **Development Efficiency**: Comprehensive debugging methodology established
+
+#### Technical Considerations
+- **Lifecycle Complexity**: More robust but slightly more complex component lifecycle
+- **Story Maintenance**: Additional argTypes require maintenance when properties change
+- **Debug Overhead**: Temporary logging adds development overhead but improves reliability
+
+### Best Practices Established
+
+#### Component Development
+1. Always implement comprehensive lifecycle handling for reactive properties
+2. Include error states and loading states in render logic
+3. Test components outside of Storybook during development
+4. Use `ifDefined()` for optional attributes to prevent empty attribute binding
+
+#### Story Development
+1. Include all component properties in argTypes for complete testing
+2. Use proper Lit HTML attribute binding (`?` for booleans, `${...}` for dynamic values)
+3. Provide meaningful default args for immediate usability
+4. Document expected behavior in story descriptions
+
+#### Debugging Methodology
+1. Add temporary comprehensive logging during issue investigation
+2. Create standalone test files for isolation testing
+3. Monitor browser console for component lifecycle events
+4. Clean up debug code before production builds
+
+### Related Issues
+- **Issue #010**: Icons rendering as filled shapes vs strokes
+- **Issue #011**: Icons not rendering in Storybook stories (this ADR)
+- **ADR-003**: Icon Rendering Strategy
+- **ADR-006**: TypeScript Configuration for LitElement
+
+### Future Considerations
+1. **Automated Testing**: Add automated tests for Storybook story rendering
+2. **Developer Tools**: Consider permanent debug modes for development
+3. **Component Templates**: Create standardized templates for new components
+4. **Documentation**: Maintain troubleshooting guide with common issues
+
+---
+
 ## Next Review Items
 
 1. **Dynamic Icon Loading** - Migration from static to dynamic approach
@@ -408,6 +682,7 @@ Examples:
 3. **Performance Optimization** - Bundle size and runtime optimizations
 4. **Accessibility Enhancements** - WCAG 2.2 compliance review
 5. **Deployment Scaling** - Multi-environment deployment strategy
+6. **Storybook Testing** - Automated story rendering verification
 
 ---
 

@@ -4,7 +4,7 @@
 * modes: light-mode,hc-light-mode,dark-mode,hc-dark-mode
 * type: component
 * variables: 1004
-* generated: 2025-06-29T13:28:05.854Z
+* generated: 2025-06-30T07:02:09.778Z
 */
 :root {
 --Color-Base-Background-default: #ffffff;
@@ -177,12 +177,12 @@
 --Color-Info-Border-disabled: #a1a7b3;
 --Color-Focus-focus: #2c72e0;
 --Boolean: true;
---Spacing-0: 0;
---Spacing-1: 16;
---Spacing-2: 24;
---Spacing-3: 32;
---Spacing-4: 40;
---Spacing-5: 48;
+--Spacing-0: 2;
+--Spacing-1: 4;
+--Spacing-2: 8;
+--Spacing-3: 10;
+--Spacing-4: 12;
+--Spacing-5: 16;
 --border-border-radius-none: 0;
 --border-border-radius-sm: 4;
 --border-border-radius-md: 8;
@@ -368,12 +368,12 @@
 --Color-Info-Border-disabled: #434e66;
 --Color-Focus-focus: #2c72e0;
 --Boolean: true;
---Spacing-0: 0;
---Spacing-1: 16;
---Spacing-2: 24;
---Spacing-3: 32;
---Spacing-4: 40;
---Spacing-5: 48;
+--Spacing-0: 2;
+--Spacing-1: 4;
+--Spacing-2: 8;
+--Spacing-3: 10;
+--Spacing-4: 12;
+--Spacing-5: 16;
 --border-border-radius-none: 0;
 --border-border-radius-sm: 4;
 --border-border-radius-md: 8;
@@ -559,12 +559,12 @@
 --Color-Info-Border-disabled: #242a37;
 --Color-Focus-focus: #2c72e0;
 --Boolean: true;
---Spacing-0: 0;
---Spacing-1: 16;
---Spacing-2: 24;
---Spacing-3: 32;
---Spacing-4: 40;
---Spacing-5: 48;
+--Spacing-0: 2;
+--Spacing-1: 4;
+--Spacing-2: 8;
+--Spacing-3: 10;
+--Spacing-4: 12;
+--Spacing-5: 16;
 --border-border-radius-none: 0;
 --border-border-radius-sm: 4;
 --border-border-radius-md: 8;
@@ -750,12 +750,12 @@
 --Color-Info-Border-disabled: #434e66;
 --Color-Focus-focus: #2c72e0;
 --Boolean: true;
---Spacing-0: 0;
---Spacing-1: 16;
---Spacing-2: 24;
---Spacing-3: 32;
---Spacing-4: 40;
---Spacing-5: 48;
+--Spacing-0: 2;
+--Spacing-1: 4;
+--Spacing-2: 8;
+--Spacing-3: 10;
+--Spacing-4: 12;
+--Spacing-5: 16;
 --border-border-radius-none: 0;
 --border-border-radius-sm: 4;
 --border-border-radius-md: 8;
