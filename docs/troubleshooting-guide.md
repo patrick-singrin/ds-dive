@@ -1724,6 +1724,112 @@ git push
 
 ---
 
+### Issue #017: Storybook Visual Testing Addon Import Resolution ✅ RESOLVED
+
+**Symptoms**:
+- Storybook build fails when using `@chromatic-com/storybook` addon
+- Manager build errors with import resolution issues during compilation
+- Build process stops during manager compilation phase
+- Netlify deployments fail after visual testing setup
+
+**Error Messages**:
+```
+✘ [ERROR] Could not resolve "storybook/manager-api"
+✘ [ERROR] Could not resolve "storybook/theming"
+Build failed with 2 errors:
+node_modules/@chromatic-com/storybook/dist/manager.mjs:4:256: ERROR: Could not resolve "storybook/manager-api"
+node_modules/@chromatic-com/storybook/dist/manager.mjs:5:56: ERROR: Could not resolve "storybook/theming"
+```
+
+**Root Cause Analysis**:
+1. **Package Export Compatibility**: The Visual Tests addon has import issues with current Storybook version
+2. **Missing Exports**: Required paths `storybook/manager-api` and `storybook/theming` not exported by current package
+3. **ESBuild Failure**: Import resolution failures cause build termination
+
+**Build Process Impact**:
+- **Manager Build Phase**: Addon attempts to import from unavailable export paths
+- **Compilation Failure**: ESBuild cannot resolve dependencies and stops
+- **Deployment Blocking**: Both local and CI/CD builds fail
+
+## ✅ **SOLUTION IMPLEMENTED**: Direct Chromatic CLI Approach
+
+**Step 1: Remove Problematic Addon**
+```typescript
+// .storybook/main.ts - Updated addons configuration
+addons: [
+  '@storybook/addon-links',
+  '@storybook/addon-essentials', 
+  '@storybook/addon-interactions',
+  '@storybook/addon-a11y',
+  '@storybook/addon-themes',
+  '@storybook/addon-viewport',
+  '@storybook/addon-measure',
+  '@storybook/addon-outline',
+  '@storybook/addon-controls',
+  '@storybook/addon-docs'
+  // Note: @chromatic-com/storybook addon removed due to import resolution issues
+  // Visual testing handled via Chromatic CLI in GitHub Actions instead
+],
+```
+
+**Step 2: Remove Addon Dependency**
+```json
+// package.json - Clean devDependencies
+{
+  "devDependencies": {
+    // REMOVED: "@chromatic-com/storybook": "^4.0.1",
+    "chromatic": "^10.0.0", // Keep CLI version for visual testing
+  }
+}
+```
+
+**Step 3: Update Visual Testing Workflow**
+```yaml
+# .github/workflows/visual-tests.yml
+- name: Run Chromatic Visual Tests
+  run: |
+    # Use Chromatic CLI directly to avoid addon compatibility issues
+    npx chromatic --project-token=${{ secrets.CHROMATIC_PROJECT_TOKEN }} --exit-zero-on-changes --only-changed --auto-accept-changes main
+  env:
+    NODE_OPTIONS: --max_old_space_size=4096
+    CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+```
+
+**Verification Steps**:
+```bash
+# 1. Test Storybook build locally
+npm run build  # Should complete without errors
+
+# 2. Verify static files generated
+ls storybook-static/  # Should contain built Storybook
+
+# 3. Test visual testing (when token configured)
+npm run visual:test  # Uses Chromatic CLI directly
+```
+
+**Benefits of CLI Approach**:
+- ✅ **No Import Issues**: Bypasses addon compatibility problems completely
+- ✅ **Same Functionality**: Full visual testing capabilities maintained  
+- ✅ **Better Control**: More CLI options and configuration flexibility
+- ✅ **Reliable Builds**: Storybook builds successfully in all environments
+- ✅ **Future-Proof**: Less dependent on addon compatibility updates
+
+**Alternative Solutions** (if CLI not preferred):
+1. **Wait for Addon Update**: Monitor `@chromatic-com/storybook` for compatibility fixes
+2. **Playwright Visual Testing**: Use `@playwright/test` for component visual testing
+3. **Argos + Storybook**: Use `@argos-ci/storybook` for visual regression testing
+
+**Prevention Measures**:
+1. **Addon Testing**: Test addon compatibility during Storybook upgrades
+2. **Build Verification**: Include Storybook build in CI/CD pipeline
+3. **Documentation**: Document working configurations for team reference
+
+**Related Issues**: #016 (Netlify Node Version), Visual Testing Setup, Deployment Pipeline
+
+**Status**: ✅ **Resolved** - Visual testing works via CLI, Storybook builds successfully
+
+---
+
 ### Related Documentation
 - [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)  
 - [Visual Testing Setup Guide](./visual-testing-setup.md)

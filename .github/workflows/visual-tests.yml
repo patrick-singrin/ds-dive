@@ -34,16 +34,12 @@ jobs:
         run: npm run build-storybook
 
       - name: Run Chromatic Visual Tests
-        uses: chromaui/action@latest
-        with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          buildScriptName: build-storybook
-          exitZeroOnChanges: true # Don't fail PR on visual changes
-          onlyChanged: true # Only test changed stories for faster execution
-          skipUpdateCheck: true
-          autoAcceptChanges: main # Auto-accept changes on main branch
+        run: |
+          # Use Chromatic CLI directly to avoid addon compatibility issues
+          npx chromatic --project-token=${{ secrets.CHROMATIC_PROJECT_TOKEN }} --exit-zero-on-changes --only-changed --auto-accept-changes main
         env:
           NODE_OPTIONS: --max_old_space_size=4096
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   # Separate job for full visual regression (manual trigger)
   full-visual-regression:
@@ -72,12 +68,9 @@ jobs:
         run: npm run build-storybook
 
       - name: Run Full Chromatic Test Suite
-        uses: chromaui/action@latest
-        with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          buildScriptName: build-storybook
-          exitZeroOnChanges: true
-          onlyChanged: false # Test all stories
-          skipUpdateCheck: true
+        run: |
+          # Use Chromatic CLI directly to avoid addon compatibility issues  
+          npx chromatic --project-token=${{ secrets.CHROMATIC_PROJECT_TOKEN }} --exit-zero-on-changes
         env:
-          NODE_OPTIONS: --max_old_space_size=4096 
+          NODE_OPTIONS: --max_old_space_size=4096
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }} 
