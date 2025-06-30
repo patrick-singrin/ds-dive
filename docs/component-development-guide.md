@@ -105,6 +105,12 @@ The agent should be aware of these key files and patterns:
 ## 🎨 **Design Token Usage Standards**
 
 ### ✅ **Correct Token Usage**
+
+**Component State Rules:**
+- **Filled variants**: Use `Primary-Background` tokens
+- **Outline/ghost variants**: Use `Subtle-Background` tokens on hover ⭐ **CRITICAL**
+- **Cross-component consistency**: IconButton should match Button behavior exactly
+
 ```css
 /* Use actual Figma tokens directly */
 .component {
@@ -114,12 +120,29 @@ The agent should be aware of these key files and patterns:
   padding: calc(var(--Spacing-3, 10) * 1px) calc(var(--Spacing-5, 16) * 1px);
   border-radius: calc(var(--border-border-radius-md, 8) * 1px);
 }
+
+/* CORRECT: Outline/ghost hover states */
+.component--outline:hover {
+  background: var(--Color-Base-Subtle-Background-hover, #ecedf0);     /* Light background */
+  color: var(--Color-Base-Foreground-hover, #1d222c);               /* Dark text */
+  border-color: var(--Color-Base-Border-hover, #a1a7b3);            /* Gray border */
+}
 ```
 
-### ❌ **Avoid Custom Variables**
+### ❌ **Avoid These Critical Mistakes**
+
 ```css
 /* Don't create unnecessary abstractions */
 --component-custom-background: var(--Color-Primary-Primary-Background-default);
+
+/* NEVER: Use primary background tokens for outline/ghost hover */
+.component--outline:hover {
+  background: var(--Color-Base-Primary-Background-default, #242a37);  /* WRONG! */
+  color: var(--Color-Base-Primary-Foreground-default, #ffffff);       /* WRONG! */
+}
+
+/* NEVER: Ignore existing component patterns */
+/* Always compare with Button component for consistency */
 ```
 
 ### 📋 **Available Token Categories**
@@ -275,4 +298,35 @@ Please follow the complete Component Development Guide (docs/component-developme
 Context: This is a LitElement + TypeScript + Storybook design system with automated visual testing via Chromatic.
 ```
 
-This ensures every component follows the same high-quality standards and patterns established in the Dive Design System. 
+This ensures every component follows the same high-quality standards and patterns established in the Dive Design System.
+
+## 🎯 **Core Design System Principles**
+
+### 1. Component Reuse Over Duplication ⭐ **NEW**
+**Always check if existing components can be reused before implementing new functionality.**
+
+**Examples:**
+- ✅ **Correct**: Use `<dive-icon name="scuba-mask">` for icon display
+- ❌ **Incorrect**: Duplicate SVG markup with `unsafeHTML(iconSvg)`
+
+**Benefits:**
+- Consistent behavior across all components
+- Single source of truth for functionality
+- Reduced maintenance overhead
+- Better testing coverage
+
+**Before implementing any new functionality, ask:**
+- "Does a component for this already exist?"
+- "Can I compose existing components to achieve this?"
+- "Am I about to duplicate logic that exists elsewhere?"
+
+### 2. Figma Design Token Alignment
+**Use actual Figma design tokens directly - never create custom CSS variables that don't align with the design system.**
+
+### 3. Comprehensive Testing
+**Implement both unit tests and visual regression tests for all components.**
+
+### 4. Accessibility First
+**Ensure proper ARIA labels, focus management, and keyboard navigation.**
+
+---

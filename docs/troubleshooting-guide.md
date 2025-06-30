@@ -1601,6 +1601,8 @@ npx chromatic --project-token=<token> # (when configured)
 
 **Related Issues**: ADR-011 (Button Component), #012 (Button Height Consistency), Visual Testing Setup
 
+**Status**: ✅ **Resolved** - Visual testing works via CLI, Storybook builds successfully
+
 ---
 
 ### Issue #016: Netlify Build Failure - Node.js Version Compatibility 
@@ -1836,4 +1838,532 @@ npm run visual:test  # Uses Chromatic CLI directly
 - [Architecture Decision Records](./architecture-decisions.md) - ADR-003: Icon Rendering Strategy
 - [Issue #011: Icons Not Rendering](./troubleshooting-guide.md#issue-011)
 
+---
+
+### Issue #018: Icon Button Accessibility and Focus Management
+
+**Symptoms**:
+- Icon buttons not announcing properly to screen readers
+- Missing or unclear focus indicators
+- Click events not triggered by keyboard navigation
+- ARIA attributes not working as expected
+
+**Error Messages**:
+```
+Accessibility violation: Button element is missing an accessible name
+Focus trap warning: Element not focusable
+Console warning: aria-label should not be empty
+```
+
+**Root Cause Analysis**:
+Icon buttons without text content need explicit accessibility attributes to be usable by assistive technologies. Common issues include:
+1. **Missing ARIA Labels**: Screen readers can't identify the button's purpose
+2. **Focus Management**: Custom focus styles may not be clearly visible
+3. **Icon-Only Context**: No text content means accessibility depends entirely on attributes
+
+**Solution**:
+
+**Step 1: Always Provide ARIA Labels**
+```typescript
+// ❌ BROKEN: No accessible name
+<dive-icon-button type="primary" icon="save"></dive-icon-button>
+
+// ✅ SOLUTION: Explicit ARIA label
+<dive-icon-button 
+  type="primary" 
+  icon="save" 
+  aria-label="Save document"
+></dive-icon-button>
+
+// ✅ ALTERNATIVE: Descriptive context
+<dive-icon-button 
+  type="destructive" 
+  icon="delete" 
+  aria-label="Delete item permanently"
+></dive-icon-button>
+```
+
+**Step 2: Verify Focus Ring Visibility**
+```css
+/* ✅ SOLUTION: Clear focus indicators */
+.icon-button:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px var(--Color-Base-Foreground-default, #ffffff), 
+    0 0 0 4px var(--focus-ring-color, var(--Color-Primary-Primary-Background-default, #2c72e0));
+}
+
+/* ✅ High contrast mode support */
+@media (prefers-contrast: high) {
+  .icon-button:focus-visible {
+    outline: 2px solid ButtonText;
+    outline-offset: 2px;
+  }
+}
+```
+
+**Step 3: Keyboard Event Handling**
+```typescript
+// ✅ SOLUTION: Proper keyboard support is built-in
+// The component uses HTML button element which provides:
+// - Tab navigation
+// - Enter and Space key activation
+// - Focus management
+// - ARIA semantics
+
+// Verify implementation:
+render() {
+  return html`
+    <button
+      class="icon-button icon-button--${this.type} icon-button--${this.variant}"
+      ?disabled=${this.disabled}
+      aria-label=${this['aria-label'] || this.icon} // Fallback to icon name
+      role="button"
+      type="button"
+    >
+      <!-- Icon content -->
+    </button>
+  `;
+}
+```
+
+**Step 4: Icon Selection and Context**
+```typescript
+// ✅ SOLUTION: Choose icons that match actions
+const iconMappings = {
+  // Primary actions
+  'save': 'Save document',
+  'check': 'Confirm action', 
+  'plus': 'Add new item',
+  
+  // Navigation
+  'chevron-left': 'Previous page',
+  'chevron-right': 'Next page',
+  'home': 'Go to homepage',
+  
+  // Destructive actions  
+  'delete': 'Delete item permanently',
+  'x': 'Cancel or close',
+  
+  // Settings and tools
+  'settings': 'Open settings',
+  'edit': 'Edit content',
+  'search': 'Search'
+};
+```
+
+**Implementation Best Practices**:
+
+**Accessibility Checklist**:
+- ✅ Every icon button has meaningful `aria-label`
+- ✅ Labels describe the action, not the icon
+- ✅ Focus rings are clearly visible in all themes
+- ✅ Disabled buttons don't receive focus
+- ✅ Icon choice matches the action semantics
+
+**Common Label Patterns**:
+```typescript
+// Action-oriented labels (preferred)
+aria-label="Save document"     // Not "Save icon"
+aria-label="Delete item"       // Not "Trash can"
+aria-label="Edit content"      // Not "Pencil"
+aria-label="Go to homepage"    // Not "House icon"
+
+// Context-specific labels
+aria-label="Save draft"        // In draft context
+aria-label="Save changes"      // In edit context
+aria-label="Save as template"  // In template context
+```
+
+**Testing Verification**:
+```bash
+# Screen reader testing
+# 1. Navigate with Tab key - should announce purpose clearly
+# 2. Test with screen reader (VoiceOver/NVDA) - should read aria-label
+# 3. Verify focus rings are visible in high contrast mode
+
+# Automated accessibility testing  
+npm run test:a11y  # If configured with @storybook/addon-a11y
+```
+
+**Prevention Measures**:
+1. **Design Review**: Include accessibility in component design process
+2. **Storybook a11y Addon**: Use `@storybook/addon-a11y` for automated testing
+3. **Manual Testing**: Test with keyboard navigation and screen readers
+4. **Documentation**: Provide clear usage examples with accessibility
+
+**Related Issues**: #008 (Class Field Shadowing), #001 (Property Configuration)
+
+**Status**: 🔧 **Preventable** - Follow accessibility guidelines and test with assistive technologies
+
+---
+
+### Related Documentation
+- [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)  
+- [Visual Testing Setup Guide](./visual-testing-setup.md)
+- [Architecture Decision Records](./architecture-decisions.md) - ADR-003: Icon Rendering Strategy
+- [Issue #011: Icons Not Rendering](./troubleshooting-guide.md#issue-011)
+
 --- 
+
+### Issue #019: Icon Outline Error - SVG Fill vs Stroke
+
+**Problem**: Icons render as filled shapes instead of outlined strokes when using incorrect SVG structure.
+
+**Symptoms**:
+- Icons appear solid/filled instead of outlined
+- Visual difference from design specifications
+- Inconsistent with other icon implementations
+- May not be caught by automated visual testing
+
+**Error Indicators**:
+```
+Visual regression: Icon appears filled instead of outlined
+Component renders but doesn't match Figma design
+```
+
+**Root Cause**: Using simplified SVG path data without proper Tabler Icons attributes:
+
+```typescript
+// ❌ WRONG: Simple path only (renders as filled)
+const iconPath = 'M8.5 8.5l1 -4.5h5l1 4.5';
+return `<svg><path d="${iconPath}"/></svg>`;
+
+// ✅ CORRECT: Complete SVG with proper attributes
+const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" 
+  stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M8.5 8.5l1 -4.5h5l1 4.5"/>
+</svg>`;
+```
+
+**Solution Steps**:
+1. **Use Complete SVG Markup**: Include all Tabler Icons attributes
+2. **Set Proper Attributes**: `fill="none"`, `stroke="currentColor"`, `stroke-width="1.5"`
+3. **Import unsafeHTML**: Use `unsafeHTML(iconSvg)` for rendering
+4. **Test Visually**: Verify icons appear outlined, not filled
+
+**Prevention**:
+- Always copy complete SVG markup from Tabler Icons
+- Include comprehensive visual regression testing
+- Test icon rendering in all component variants
+
+**Related Issues**: [Issue #011: Icons Not Rendering](#issue-011)
+
+---
+
+### Issue #020: Icon Button Development - AI Agent Workflow Best Practices
+
+**Problem**: Ensuring consistent, high-quality component development using AI agent workflow while avoiding common pitfalls.
+
+**Key Success Factors**:
+1. **Follow Component Development Guide**: Use `docs/component-development-guide.md` checklist
+2. **Use AI Agent Prompt Template**: Copy from `docs/ai-agent-prompt-template.md`
+3. **Proper Figma Analysis**: Extract complete specifications before coding
+4. **Direct Token Usage**: Use actual Figma design tokens, not custom variables
+
+**Critical Checklist**:
+- ✅ **Documentation Page**: Include `tags: ['autodocs']` in stories
+- ✅ **Icon Rendering**: Use complete SVG markup with `fill="none"`, `stroke="currentColor"`
+- ✅ **Visual Testing**: Add VisualRegressionMatrix story with multi-mode support
+- ✅ **Accessibility**: Include proper ARIA labels and focus management
+- ✅ **Token Mapping**: Use actual design tokens directly (no custom CSS variables)
+
+**Component Structure Pattern**:
+```typescript
+// ✅ Correct approach
+@customElement('dive-component-name')
+export class DiveComponentName extends LitElement {
+  static styles = css`
+    :host {
+      /* Use Figma tokens directly */
+      --component-padding: calc(var(--Spacing-3, 10) * 1px);
+    }
+    
+    .component--primary.component--filled {
+      background: var(--Color-Primary-Primary-Background-default, #2c72e0);
+      color: var(--Color-Primary-Primary-Foreground-default, #ffffff);
+    }
+  `;
+  
+  @property({ type: String, reflect: true })
+  type: 'base' | 'primary' | 'destructive' = 'base';
+  
+  // Include comprehensive accessibility
+  @property({ type: String, attribute: 'aria-label' })
+  ariaLabel: string | null = null;
+}
+```
+
+**Stories Best Practices**:
+```typescript
+// ✅ Essential story structure
+const meta: Meta = {
+  title: 'Components/Component Name',
+  component: 'dive-component-name',
+  tags: ['autodocs'], // CRITICAL: Generates Documentation page
+  // ... other config
+};
+
+// ✅ Always include VisualRegressionMatrix for Chromatic
+export const VisualRegressionMatrix: Story = {
+  parameters: {
+    chromatic: {
+      modes: {
+        light: { theme: 'light' },
+        dark: { theme: 'dark' },
+        'high-contrast': { theme: 'hc-light' }
+      }
+    }
+  },
+  // Complete variant matrix with all types/states
+};
+```
+
+**Common Pitfalls to Avoid**:
+- ❌ Missing `tags: ['autodocs']` → No Documentation page
+- ❌ Simple SVG paths → Icons render filled instead of outlined
+- ❌ Custom CSS variables → Design system inconsistency
+- ❌ Missing visual regression testing → Chromatic gaps
+- ❌ Poor accessibility → Screen reader issues
+
+**Verification Steps**:
+1. **Build Test**: `npm run build:storybook` succeeds
+2. **Documentation**: "Documentation" tab appears in Storybook
+3. **Icon Rendering**: Icons appear outlined with proper stroke
+4. **Visual Testing**: VisualRegressionMatrix covers all variants
+5. **Accessibility**: ARIA labels and keyboard navigation work
+
+**Success Metrics**:
+- ✅ Component built in under 2 hours
+- ✅ All Figma variants implemented
+- ✅ Complete Storybook documentation
+- ✅ Comprehensive visual testing coverage
+- ✅ WCAG 2.1 AA accessibility compliance
+
+**Related Documentation**:
+- [Component Development Guide](./component-development-guide.md)
+- [AI Agent Prompt Template](./ai-agent-prompt-template.md)
+- [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)
+
+---
+
+### Related Documentation
+- [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)  
+- [Visual Testing Setup Guide](./visual-testing-setup.md)
+- [Architecture Decision Records](./architecture-decisions.md) - ADR-003: Icon Rendering Strategy
+- [Issue #011: Icons Not Rendering](./troubleshooting-guide.md#issue-011)
+
+## Issue #019: Icon Button Icons Rendering as Filled Instead of Outlined
+
+### Problem
+Icons in the IconButton component were rendering as filled shapes instead of outlined strokes, not matching the Figma design which shows outlined icons.
+
+### Root Cause
+The IconButton component was duplicating SVG icon markup instead of using the existing Icon component, leading to:
+- Inconsistent SVG structure 
+- Missing proper `fill="none"` and `stroke="currentColor"` attributes
+- Duplication of icon logic that was already correctly implemented in the Icon component
+
+### Solution
+Refactor IconButton to use the existing Icon component:
+
+```typescript
+// Before: Custom SVG markup duplication
+render() {
+  return html`
+    <button>
+      <div class="icon">
+        ${unsafeHTML(this._getIconSvg(this.icon))}
+      </div>
+    </button>
+  `;
+}
+
+// After: Use existing Icon component
+import '../Icon/Icon.js';
+
+render() {
+  return html`
+    <button>
+      <dive-icon 
+        name=${this.icon} 
+        size="medium"
+        aria-hidden="true"
+      ></dive-icon>
+    </button>
+  `;
+}
+```
+
+### Benefits of This Approach
+- **Consistency**: Uses same icon rendering logic as standalone Icon component
+- **Maintainability**: Single source of truth for icon definitions
+- **Quality**: Inherits proper SVG structure with outlined strokes
+- **DRY Principle**: No code duplication
+
+### Prevention
+- Always check if existing components can be reused before creating new implementations
+- Review visual testing results carefully - outline vs fill differences should be caught
+- Follow design system principles of component composition over duplication
+
+### Testing
+Verify fix by checking IconButton stories in Storybook - all icons should render as outlined strokes, not filled shapes.
+
+## Issue #020: Focus Indicators Should Always Use Primary Color
+
+### Problem
+Focus indicators across components (Button, IconButton) were using type-specific colors, creating inconsistent visual hierarchy and potentially confusing users about interaction patterns.
+
+**Before:**
+- Base buttons: Dark gray focus rings
+- Primary buttons: Blue focus rings  
+- Destructive buttons: Red focus rings
+- Focus ring width varied between components
+
+### Root Cause
+Components were implementing their own focus color logic based on component type rather than following a unified design system principle.
+
+### Solution
+Standardized all focus indicators to always use primary color (`--Color-Brand-Primary-Background-default: #0066cc`):
+
+**Button Component:**
+```css
+/* Before: Type-specific colors */
+--button-focus-base: var(--Color-Primary-Primary-Background-default, #2c72e0);
+--button-focus-primary: var(--Color-Primary-Primary-Background-default, #2c72e0);
+--button-focus-destructive: var(--Color-Error-Primary-Background-default, #ea0d11);
+
+/* After: Always primary color */
+--button-focus-color: var(--Color-Brand-Primary-Background-default, #0066cc);
+
+.button:focus-visible {
+  outline: 1px solid var(--button-focus-color);
+  outline-offset: 2px;
+}
+```
+
+**IconButton Component:**
+```css
+/* Before: Type-specific overrides */
+.icon-button--base:focus-visible { outline-color: #242a37; }
+.icon-button--primary:focus-visible { outline-color: #0066cc; }
+.icon-button--destructive:focus-visible { outline-color: #dc2626; }
+
+/* After: Unified primary color */
+.icon-button:focus-visible {
+  outline: 1px solid var(--Color-Brand-Primary-Background-default, #0066cc);
+  outline-offset: 2px;
+}
+```
+
+### Design System Principle Established
+**Focus indicators should always use primary color across all components for:**
+- **Consistency**: Same visual language throughout the interface
+- **Accessibility**: Predictable focus behavior for keyboard users
+- **Brand Recognition**: Reinforces primary brand color usage
+- **Simplicity**: Removes complexity of type-specific focus colors
+
+### Updated Documentation
+- Added focus color principle to core design system principles
+- Updated AI agent prompt templates to include this requirement
+- Updated component development guide with focus color standards
+
+### Testing
+Verify in Storybook that all Button and IconButton variants now show consistent blue (#0066cc) focus rings regardless of their type (base/primary/destructive).
+
+## Issue #021: IconButton Hover States Using Wrong Figma Tokens
+
+### Problem
+IconButton hover states were using completely incorrect Figma design tokens, making outline and ghost variants look like filled buttons on hover instead of subtle background changes.
+
+**Incorrect Implementation:**
+```css
+/* WRONG: IconButton base outline hover */
+.icon-button--base.icon-button--outline:hover {
+  background: var(--Color-Base-Primary-Background-default, #242a37);  /* Dark! */
+  color: var(--Color-Base-Primary-Foreground-default, #ffffff);       /* White! */
+}
+
+/* WRONG: IconButton base ghost hover */
+.icon-button--base.icon-button--ghost:hover {
+  background: var(--Color-Base-Primary-Background-default, #242a37);  /* Dark! */
+  color: var(--Color-Base-Primary-Foreground-default, #ffffff);       /* White! */
+}
+```
+
+**Expected Behavior (from Button component):**
+```css
+/* CORRECT: Button base outline hover */
+.button--base.button--outline:hover {
+  background: var(--Color-Base-Subtle-Background-hover, #ecedf0);     /* Light gray! */
+  color: var(--Color-Base-Foreground-hover, #1d222c);               /* Dark text! */
+}
+```
+
+### Root Cause
+1. **No Cross-Component Validation**: IconButton was developed without comparing to Button component behavior
+2. **Incorrect Token Category**: Used `Primary-Background` tokens instead of `Subtle-Background` tokens
+3. **Missing Design System Rules**: No documented rules about when to use subtle vs primary backgrounds
+
+### Solution Applied
+
+**Fixed all IconButton hover states to match Button component:**
+
+```css
+/* Base type - CORRECTED */
+.icon-button--base.icon-button--outline:hover {
+  background: var(--Color-Base-Subtle-Background-hover, #ecedf0);
+  color: var(--Color-Base-Foreground-hover, #1d222c);
+  border-color: var(--Color-Base-Border-hover, #a1a7b3);
+}
+
+/* Primary type - CORRECTED */
+.icon-button--primary.icon-button--outline:hover {
+  background: var(--Color-Primary-Subtle-Background-hover, #eaf1fc);
+  color: var(--Color-Brand-Primary-Background-hover, #0052a3);
+  border-color: var(--Color-Brand-Primary-Background-default, #0066cc);
+}
+
+/* Destructive type - CORRECTED */
+.icon-button--destructive.icon-button--outline:hover {
+  background: var(--Color-Error-Subtle-Background-hover, #fde7e7);
+  color: var(--Color-Status-Error-Background-hover, #b91c1c);
+  border-color: var(--Color-Status-Error-Background-default, #dc2626);
+}
+```
+
+### Design System Rule Established
+**"Outline and ghost variants should ALWAYS use subtle background tokens on hover, never primary background tokens"**
+
+- **Filled buttons**: Use primary background tokens
+- **Outline/ghost buttons**: Use subtle background tokens  
+- **IconButton**: Should follow exact same patterns as Button component
+
+### Prevention Strategy Implemented
+
+**1. Component Comparison Requirements**
+- All new components must be compared with similar existing components
+- Token usage patterns must be documented and validated
+- Cross-component consistency must be verified
+
+**2. Documentation Standards**
+- Added token usage rules to component development guide
+- Created comparative examples showing correct vs incorrect patterns
+- Established design principles for component state behaviors
+
+**3. Testing Enhancement Planned**
+- Visual regression tests for ALL states (hover, active, focus)
+- Cross-component style comparison automation
+- CSS token validation scripts
+
+### Files Modified
+- `src/components/IconButton/IconButton.ts` - Fixed all hover/active state tokens
+- `docs/troubleshooting-guide.md` - Documented issue and prevention
+- `docs/component-development-guide.md` - Added token usage rules
+
+### Testing
+1. Build Storybook and verify IconButton hover states now show light backgrounds for outline/ghost variants
+2. Compare Button and IconButton hover behaviors - should be identical
+3. Confirm no visual regressions in existing Button component

@@ -66,10 +66,8 @@ export class DiveButton extends LitElement {
       --button-destructive-border-active: var(--Color-Error-Primary-Border-active, #c00b0e);
       --button-destructive-border-disabled: var(--Color-Error-Primary-Border-disabled, #a1a7b3);
       
-      /* Focus colors */
-      --button-focus-base: var(--Color-Primary-Primary-Background-default, #2c72e0);
-      --button-focus-primary: var(--Color-Primary-Primary-Background-default, #2c72e0);
-      --button-focus-destructive: var(--Color-Error-Primary-Background-default, #ea0d11);
+      /* Focus colors - Always use primary color for consistency */
+      --button-focus-color: var(--Color-Brand-Primary-Background-default, #0066cc);
       
       /* Spacing tokens */
       --button-padding-small: calc(var(--Spacing-1, 4) * 1px) calc(var(--Spacing-4, 16) * 1px);
@@ -313,18 +311,10 @@ export class DiveButton extends LitElement {
       opacity: 0.6;
     }
 
-    /* Focus states */
+    /* Focus states - Always primary color for all button types */
     .button:focus-visible {
-      outline: 2px solid var(--button-focus-base);
+      outline: 1px solid var(--button-focus-color);
       outline-offset: 2px;
-    }
-
-    .button--primary:focus-visible {
-      outline-color: var(--button-focus-primary);
-    }
-
-    .button--destructive:focus-visible {
-      outline-color: var(--button-focus-destructive);
     }
 
     /* Icon container */
