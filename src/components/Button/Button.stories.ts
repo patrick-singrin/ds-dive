@@ -603,4 +603,129 @@ It will automatically detect visual changes including:
       </div>
     </div>
   `
+};
+
+/**
+ * Comprehensive hover state testing for Button component
+ * Specifically designed to catch token misuse issues in visual regression tests
+ */
+export const HoverStateValidation: Story = {
+  name: '🔍 Hover State Validation',
+  parameters: {
+    docs: {
+      description: {
+        story: `
+**Critical Testing Story for Design Token Validation**
+
+This story specifically tests hover states to catch token misuse issues:
+- ✅ Base outline/ghost should show LIGHT backgrounds on hover (#ecedf0)
+- ❌ Base outline/ghost should NEVER show dark backgrounds on hover (#242a37)
+
+Use this story to visually validate that outline/ghost hover states use subtle-background tokens.
+        `
+      }
+    },
+    chromatic: {
+      modes: {
+        'hover-base-outline': {
+          hoverSelector: '[data-test="base-outline"]'
+        },
+        'hover-base-ghost': {
+          hoverSelector: '[data-test="base-ghost"]'
+        },
+        'hover-primary-outline': {
+          hoverSelector: '[data-test="primary-outline"]'
+        },
+        'hover-primary-ghost': {
+          hoverSelector: '[data-test="primary-ghost"]'
+        },
+        'hover-destructive-outline': {
+          hoverSelector: '[data-test="destructive-outline"]'
+        },
+        'hover-destructive-ghost': {
+          hoverSelector: '[data-test="destructive-ghost"]'
+        }
+      }
+    }
+  },
+  render: () => html`
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px;">
+      <!-- Base Type -->
+      <div>
+        <h3>Base Type</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <dive-button 
+            data-test="base-outline"
+            type="base" 
+            variant="outline" 
+            text="Base Outline">
+          </dive-button>
+          <dive-button 
+            data-test="base-ghost"
+            type="base" 
+            variant="ghost" 
+            text="Base Ghost">
+          </dive-button>
+          <small style="color: #666; margin-top: 10px;">
+            ✅ Should show light gray (#ecedf0) on hover<br>
+            ❌ NOT dark background (#242a37)
+          </small>
+        </div>
+      </div>
+      
+      <!-- Primary Type -->
+      <div>
+        <h3>Primary Type</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <dive-button 
+            data-test="primary-outline"
+            type="primary" 
+            variant="outline" 
+            text="Primary Outline">
+          </dive-button>
+          <dive-button 
+            data-test="primary-ghost"
+            type="primary" 
+            variant="ghost" 
+            text="Primary Ghost">
+          </dive-button>
+          <small style="color: #666; margin-top: 10px;">
+            ✅ Should show light blue (#eaf1fc) on hover
+          </small>
+        </div>
+      </div>
+      
+      <!-- Destructive Type -->
+      <div>
+        <h3>Destructive Type</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <dive-button 
+            data-test="destructive-outline"
+            type="destructive" 
+            variant="outline" 
+            text="Destructive Outline">
+          </dive-button>
+          <dive-button 
+            data-test="destructive-ghost"
+            type="destructive" 
+            variant="ghost" 
+            text="Destructive Ghost">
+          </dive-button>
+          <small style="color: #666; margin-top: 10px;">
+            ✅ Should show light red (#fde7e7) on hover
+          </small>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background: #f0f0f0; padding: 15px; margin-top: 20px; border-radius: 8px;">
+      <h4>🔍 Visual Regression Testing Notes</h4>
+      <ul style="margin: 10px 0; padding-left: 20px;">
+        <li><strong>Purpose:</strong> Catch token misuse in hover states</li>
+        <li><strong>Expected:</strong> All outline/ghost variants show subtle, light backgrounds on hover</li>
+        <li><strong>Critical:</strong> Base variants must never show dark backgrounds on hover</li>
+        <li><strong>Chromatic:</strong> Tests each hover state individually in different modes</li>
+      </ul>
+    </div>
+  `
 }; 

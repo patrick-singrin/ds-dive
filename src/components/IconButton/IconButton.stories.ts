@@ -626,4 +626,141 @@ export const VisualRegressionMatrix: Story = {
       </div>
     </div>
   `
+};
+
+/**
+ * Cross-component hover state validation 
+ * Ensures IconButton hover behavior matches Button component exactly
+ */
+export const HoverStateValidation: Story = {
+  name: '🔍 Hover State Validation (vs Button)',
+  parameters: {
+    docs: {
+      description: {
+        story: `
+**Critical Cross-Component Consistency Testing**
+
+This story validates that IconButton hover states match Button component exactly:
+- ✅ Base outline/ghost should show LIGHT backgrounds on hover (#ecedf0) - same as Button
+- ❌ Base outline/ghost should NEVER show dark backgrounds on hover (#242a37)
+
+Compare with Button > Hover State Validation story to ensure identical behavior.
+        `
+      }
+    },
+    chromatic: {
+      modes: {
+        'hover-base-outline': {
+          hoverSelector: '[data-test="iconbutton-base-outline"]'
+        },
+        'hover-base-ghost': {
+          hoverSelector: '[data-test="iconbutton-base-ghost"]'
+        },
+        'hover-primary-outline': {
+          hoverSelector: '[data-test="iconbutton-primary-outline"]'
+        },
+        'hover-primary-ghost': {
+          hoverSelector: '[data-test="iconbutton-primary-ghost"]'
+        },
+        'hover-destructive-outline': {
+          hoverSelector: '[data-test="iconbutton-destructive-outline"]'
+        },
+        'hover-destructive-ghost': {
+          hoverSelector: '[data-test="iconbutton-destructive-ghost"]'
+        }
+      }
+    }
+  },
+  render: () => html`
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px;">
+      <!-- Base Type -->
+      <div>
+        <h3>Base Type</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+          <dive-icon-button 
+            data-test="iconbutton-base-outline"
+            type="base" 
+            variant="outline" 
+            icon="scuba-mask"
+            aria-label="Base outline icon button">
+          </dive-icon-button>
+          <dive-icon-button 
+            data-test="iconbutton-base-ghost"
+            type="base" 
+            variant="ghost" 
+            icon="scuba-mask"
+            aria-label="Base ghost icon button">
+          </dive-icon-button>
+          <small style="color: #666; margin-top: 10px;">
+            ✅ Should show light gray (#ecedf0) on hover<br>
+            ❌ NOT dark background (#242a37)<br>
+            <strong>Must match Button component</strong>
+          </small>
+        </div>
+      </div>
+      
+      <!-- Primary Type -->
+      <div>
+        <h3>Primary Type</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+          <dive-icon-button 
+            data-test="iconbutton-primary-outline"
+            type="primary" 
+            variant="outline" 
+            icon="scuba-mask"
+            aria-label="Primary outline icon button">
+          </dive-icon-button>
+          <dive-icon-button 
+            data-test="iconbutton-primary-ghost"
+            type="primary" 
+            variant="ghost" 
+            icon="scuba-mask"
+            aria-label="Primary ghost icon button">
+          </dive-icon-button>
+          <small style="color: #666; margin-top: 10px;">
+            ✅ Should show light blue (#eaf1fc) on hover<br>
+            <strong>Must match Button component</strong>
+          </small>
+        </div>
+      </div>
+      
+      <!-- Destructive Type -->
+      <div>
+        <h3>Destructive Type</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+          <dive-icon-button 
+            data-test="iconbutton-destructive-outline"
+            type="destructive" 
+            variant="outline" 
+            icon="scuba-mask"
+            aria-label="Destructive outline icon button">
+          </dive-icon-button>
+          <dive-icon-button 
+            data-test="iconbutton-destructive-ghost"
+            type="destructive" 
+            variant="ghost" 
+            icon="scuba-mask"
+            aria-label="Destructive ghost icon button">
+          </dive-icon-button>
+          <small style="color: #666; margin-top: 10px;">
+            ✅ Should show light red (#fde7e7) on hover<br>
+            <strong>Must match Button component</strong>
+          </small>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background: #f0f0f0; padding: 15px; margin-top: 20px; border-radius: 8px;">
+      <h4>🔍 Cross-Component Validation</h4>
+      <ul style="margin: 10px 0; padding-left: 20px;">
+        <li><strong>Purpose:</strong> Ensure IconButton matches Button hover behavior exactly</li>
+        <li><strong>Critical Rule:</strong> IconButton should follow same token patterns as Button</li>
+        <li><strong>Visual Test:</strong> Compare these hover states with Button > Hover State Validation</li>
+        <li><strong>Token Rule:</strong> Outline/ghost variants must use subtle-background tokens only</li>
+      </ul>
+      <div style="background: #fff3cd; padding: 10px; border-radius: 4px; margin-top: 10px;">
+        <strong>💡 Design System Principle:</strong> "IconButton is basically a Button without label" - hover states must be identical.
+      </div>
+    </div>
+  `
 }; 

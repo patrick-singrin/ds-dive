@@ -38,7 +38,12 @@
     "analyze": "vite-bundle-analyzer dist/stats.html",
     "build:analyze": "npm run build:storybook && npx bundlesize",
     "performance:test": "npm run build:storybook && npx lighthouse-ci --config=lighthouserc.js",
-    "visual:test": "npm run build:storybook && chromatic --exit-zero-on-changes"
+    "visual:test": "npm run build:storybook && chromatic --exit-zero-on-changes",
+    "validate:tokens": "node scripts/validate-tokens.mjs",
+    "checklist": "node scripts/component-checklist.mjs",
+    "validate:all": "npm run lint && npm run test",
+    "pre-commit": "npm run validate:all",
+    "pre-commit:full": "npm run checklist && npm run validate:all"
   },
   "dependencies": {
     "lit": "^3.1.0"
