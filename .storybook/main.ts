@@ -12,7 +12,8 @@ const config: StorybookConfig = {
     '@storybook/addon-measure',
     '@storybook/addon-outline',
     '@storybook/addon-controls',
-    '@storybook/addon-docs'
+    '@storybook/addon-docs',
+    '@chromatic-com/storybook'
   ],
   framework: {
     name: '@storybook/web-components-vite',

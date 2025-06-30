@@ -1,0 +1,83 @@
+name: Visual Regression Testing
+
+on:
+  push:
+    branches: 
+      - main
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  visual-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for Chromatic baseline comparison
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Run Chromatic Visual Tests
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: build-storybook
+          exitZeroOnChanges: true # Don't fail PR on visual changes
+          onlyChanged: true # Only test changed stories for faster execution
+          skipUpdateCheck: true
+          autoAcceptChanges: main # Auto-accept changes on main branch
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+
+  # Separate job for full visual regression (manual trigger)
+  full-visual-regression:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build design tokens
+        run: npm run build:tokens
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Run Full Chromatic Test Suite
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          buildScriptName: build-storybook
+          exitZeroOnChanges: true
+          onlyChanged: false # Test all stories
+          skipUpdateCheck: true
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096 

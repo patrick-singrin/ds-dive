@@ -819,6 +819,219 @@ npm run storybook
 
 ---
 
+### Issue #012: Button Height Inconsistency with Icon Toggle
+
+**Symptoms**:
+- Button height changes when toggling `show-icon` property
+- Icon container creating incorrect 31px height instead of expected 24px
+- Icons not perfectly vertically centered within buttons
+- Visual layout jumps when switching between icon+text and text-only states
+
+**User Feedback**:
+> "I think we need to refine it a bit the icon is in a container or something creating a height of 31px (the icon should be 24x24px) causing it to be not vertically in the centred. If i set showIcon=false the height of the button changes. I guess that's also caused by the 31px height of the icon container"
+
+**Root Cause Analysis**:
+**Icon container inheriting text spacing properties**: The `.button__icon` container was not properly isolated from text-related CSS properties, causing it to adopt font-based line-heights and spacing that exceeded the intended 24px icon dimensions.
+
+**Initial CSS Issues**:
+```css
+.button__icon {
+  flex-shrink: 0;  // ❌ Missing explicit dimensions
+  // ❌ No height/width constraints
+  // ❌ Inheriting line-height from button text styles
+}
+```
+
+**User's Key Insight - Figma Design System Approach**:
+> "in figma the text has a line-height of 24px ... I guess that's preventing the height change when hiding the icon"
+
+**This was the breakthrough insight**: Instead of CSS workarounds, use Figma's actual **24px line-height specification** to naturally match the **24px icon height**.
+
+**Solution - Figma-Accurate Implementation**:
+
+**Step 1: Use Figma-specified line-heights**
+```css
+/* Typography from Figma specifications */
+--button-line-height: 24px;        /* ✅ Matches icon height exactly */
+--button-line-height-small: 20px;  /* ✅ For small buttons */
+
+.button__text {
+  line-height: var(--button-line-height); /* 24px from Figma */
+}
+```
+
+**Step 2: Icon container with exact dimensions**
+```css
+.button__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;                      /* ✅ Exact icon size */
+  height: 24px;                     /* ✅ Exact icon size */
+  line-height: 24px;                /* ✅ Match text line-height */
+}
+```
+
+**Step 3: Size-appropriate scaling**
+```css
+.button--small .button__icon {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;               /* ✅ Match small button line-height */
+}
+```
+
+**Why This Approach Works**:
+- **Text (24px line-height) = Icon (24px height)** creates natural alignment
+- **No CSS hacks required** - follows actual Figma design specifications
+- **Size scaling works correctly** for both default and small button variants
+- **Design system accuracy** over CSS workarounds
+
+**User Feedback on Solution**:
+> "it worked"
+
+**Verification**:
+```bash
+# Test height consistency
+npm run storybook
+# Navigate to Button > "Icon vs Text Only (Height Fixed)"
+# Toggle show-icon control - height should remain constant
+# Buttons with/without icons should have identical height
+```
+
+**Prevention**:
+- **Follow Figma Specifications**: Use actual design system values rather than CSS approximations
+- **Line-height = Icon Height**: Ensure text line-height matches icon dimensions  
+- **Size Scaling**: Maintain proportions across size variants
+- **Document Figma Values**: Clearly mark temporary CSS variables for future token replacement
+
+**Related Issues**: ADR-011 (Button Component), #011 (Storybook Integration)
+
+---
+
+### Issue #013: Design Token Consistency and CSS Variable Management
+
+**Symptoms**:
+- Hardcoded CSS values in components that should use design tokens
+- Risk of Figma-Storybook design inconsistencies  
+- Temporary CSS variables without clear replacement guidance
+- Missing typography tokens from Figma export pipeline
+
+**User Feedback**:
+> "Regarding the button and the text. I saw that you created some CSS Variables for the line-height. I don't want to have a mismatch of CSS Variables i Storybook and Figma. So far the problem is that I didn't export the font styles used in Figma. Can you maybe add a comment to replace and remove the css vars you created once we imported the proper text styles"
+
+**Root Cause Analysis**:
+**Incomplete design token pipeline**: Typography tokens have not yet been exported from Figma, creating a gap where components need temporary hardcoded values. Without clear documentation, these temporary values risk becoming permanent technical debt.
+
+**Solution - TODO Documentation Pattern**:
+
+**Step 1: Mark temporary variables clearly**
+```css
+/* TODO: Replace with proper Figma typography tokens once exported */
+/* TEMPORARY: These should be replaced with design system typography tokens */
+--button-font-size: 16px;                /* TODO: Replace with --Typography-Body-Medium-FontSize */
+--button-font-weight: 400;               /* TODO: Replace with --Typography-Body-Medium-FontWeight */
+--button-line-height: 24px;              /* TODO: Replace with --Typography-Body-Medium-LineHeight */
+
+/* TODO: Replace with proper Figma small text tokens once exported */
+--button-font-size-small: 14px;          /* TODO: Replace with --Typography-Body-Small-FontSize */
+--button-line-height-small: 20px;        /* TODO: Replace with --Typography-Body-Small-LineHeight */
+```
+
+**Step 2: Create replacement workflow**
+```bash
+# When typography tokens are exported from Figma:
+# 1. Search for: "TODO: Replace with proper Figma typography tokens"
+# 2. Replace hardcoded values with proper design tokens
+# 3. Remove TODO comments
+# 4. Update component documentation
+```
+
+**Expected Token Structure** (when exported):
+```css
+/* Future Figma typography tokens */
+--Typography-Body-Medium-FontSize: 16px;
+--Typography-Body-Medium-FontWeight: 400;
+--Typography-Body-Medium-LineHeight: 24px;
+--Typography-Body-Small-FontSize: 14px;
+--Typography-Body-Small-LineHeight: 20px;
+```
+
+**Prevention**:
+- **Clear TODO Markers**: Always document temporary solutions
+- **Token Pipeline Planning**: Export typography tokens alongside color tokens
+- **Regular Audits**: Search for TODO comments during design system reviews
+- **Component Standards**: Require proper token usage before production release
+
+**Related Issues**: #012 (Button Height), CSS_Variable_Usage_Guide.md
+
+---
+
+### Issue #014: Incorrect Icon Implementation from Source
+
+**Symptoms**:
+- Icons displaying incorrectly despite using correct icon names
+- Visual appearance doesn't match official icon library
+- Outline/stroke rendering problems with specific icons
+- Icon paths not matching canonical source
+
+**User Feedback**:
+> "The scuba-mask icon has a outline problem. I think it's not correctly applied. Check our docs/ and/or the website for this icon: @https://tabler.io/icons/icon/scuba-mask"
+
+**Root Cause Analysis**:
+**Incorrect SVG path data**: The scuba-mask icon was implemented with incorrect path data that didn't match the official Tabler Icons source, causing visual rendering problems.
+
+**Comparison Analysis**:
+
+**❌ Incorrect Implementation** (original):
+```xml
+<path d="M4 7h16v5a8 8 0 0 1 -16 0z" />
+<path d="M9 7v-2a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v2" />
+<path d="M8 12a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" />
+<path d="M14 12a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" />
+<path d="M12 18l2 3l2 -3" />
+<path d="M4 12l4 2" />
+<path d="M20 12l-4 2" />
+```
+
+**✅ Correct Implementation** ([Tabler Icons official](https://tabler.io/icons/icon/scuba-mask)):
+```xml
+<path d="M4 7h12a1 1 0 0 1 1 1v4.5a2.5 2.5 0 0 1 -2.5 2.5h-.5a2 2 0 0 1 -2 -2a2 2 0 1 0 -4 0a2 2 0 0 1 -2 2h-.5a2.5 2.5 0 0 1 -2.5 -2.5v-4.5a1 1 0 0 1 1 -1z" />
+<path d="M10 17a2 2 0 0 0 2 2h3.5a5.5 5.5 0 0 0 5.5 -5.5v-9.5" />
+```
+
+**Solution Process**:
+1. **Reference Official Source**: Always verify icons against [Tabler Icons website](https://tabler.io/icons/icon/scuba-mask)
+2. **Copy Exact SVG Code**: Use the official SVG paths without modifications
+3. **Maintain Tabler Attributes**: Keep standard stroke properties and class names
+4. **Visual Verification**: Test icon appearance in Storybook after implementation
+
+**Prevention Standards**:
+- **Icon Verification Workflow**: Always check official Tabler Icons source before implementation
+- **Visual Testing**: Include icon appearance in component review process  
+- **Source Documentation**: Link to official icon source in code comments
+- **Regular Audits**: Periodically verify icon implementations against latest Tabler versions
+
+**Icon Implementation Template**:
+```typescript
+// Always include source reference
+'icon-name': `<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24" height="24" viewBox="0 0 24 24"
+  fill="none" stroke="currentColor" stroke-width="2"
+  stroke-linecap="round" stroke-linejoin="round"
+  class="icon icon-tabler icons-tabler-outline icon-tabler-[name]"
+>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <!-- Copy exact paths from https://tabler.io/icons/icon/[name] -->
+</svg>`
+```
+
+**Related Issues**: #010 (Icon Rendering), ADR-003 (Icon Strategy)
+
+---
+
 ## 🔄 Automated Diagnostics
 
 ### Running Diagnostics
@@ -1266,6 +1479,133 @@ src/tokens/css-vars/index.css
 
 ### Related Documentation
 - [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)
+- [Architecture Decision Records](./architecture-decisions.md) - ADR-003: Icon Rendering Strategy
+- [Issue #011: Icons Not Rendering](./troubleshooting-guide.md#issue-011)
+
+---
+
+### Issue #015: Base Type Button Color Mapping Mismatch
+
+**Symptoms**:
+- Base type buttons in Storybook don't visually match Figma design reference
+- Outline and ghost variants using wrong text color (#242A37 instead of #1D222C)
+- Dark background color being incorrectly applied as text color in non-filled variants
+- Visual inconsistency between design specification and implementation
+
+**User Feedback**:
+> "I just discovered an issue with the type=base variant. see the attached images. The image with the vertically stacked buttons is the figma component. Can we fix the type=base variant in storybook"
+
+**Visual Evidence**:
+User provided side-by-side comparison images showing clear color mismatches in base type button matrix between Storybook and Figma reference design.
+
+**Root Cause Analysis**:
+**Incorrect Figma token mapping**: Component was creating custom CSS variables and mapping the wrong Figma tokens to the wrong use cases:
+
+1. **Wrong Approach**: Created custom variables like `--button-base-text-default`
+2. **Token Misuse**: Used `--Color-Base-Primary-Background-default` (#242A37 dark) for outline button text
+3. **Missing Proper Mapping**: Should use `--Color-Base-Foreground-default` (#1D222C light) for outline button text
+
+**Diagnostic Steps**:
+```bash
+# 1. Compare Storybook vs Figma visually
+npm run storybook
+# Navigate to Button > Complete Design Matrix
+# Compare base type buttons against Figma reference
+
+# 2. Check generated CSS tokens
+npm run build:tokens
+cat src/tokens/css-vars/dive-theme/component.css | grep "Color-Base"
+
+# 3. Verify token values
+# --Color-Base-Foreground-default: #1d222c (correct for outline text)
+# --Color-Base-Primary-Background-default: #242a37 (correct for filled bg)
+```
+
+**Solution - Use Proper Figma Design Tokens Directly**:
+
+**Before (Custom Variables - Wrong Approach)**:
+```css
+/* Creating unnecessary custom variables */
+--button-base-filled-background-default: var(--Color-Base-Primary-Background-default, #242a37);
+--button-base-text-default: var(--Color-Base-Foreground-default, #1d222c);
+
+.button--base.button--outline {
+  color: var(--button-base-text-default); /* Extra abstraction layer */
+}
+```
+
+**After (Direct Figma Tokens - Correct Approach)**:
+```css
+/* Base filled: Dark background + white text */
+.button--base.button--filled {
+  background: var(--Color-Base-Primary-Background-default, #242a37);
+  color: var(--Color-Base-Primary-Foreground-default, #ffffff);
+  border-color: var(--Color-Base-Primary-Background-default, #242a37);
+}
+
+/* Base outline/ghost: Light text + transparent background */
+.button--base.button--outline,
+.button--base.button--ghost {
+  background: transparent;
+  color: var(--Color-Base-Foreground-default, #1d222c); /* Correct light color */
+  border-color: var(--Color-Base-Border-default, #c7cad1);
+}
+```
+
+**Figma Token Mapping Reference**:
+
+| Use Case | Correct Figma Token | Color Value | Usage |
+|----------|-------------------|-------------|-------|
+| Base filled background | `--Color-Base-Primary-Background-default` | #242A37 | Dark background |
+| Base filled text | `--Color-Base-Primary-Foreground-default` | #FFFFFF | White text on dark |
+| Base outline/ghost text | `--Color-Base-Foreground-default` | #1D222C | Light text color |
+| Base borders | `--Color-Base-Border-default` | #C7CAD1 | Border color |
+| Hover backgrounds | `--Color-Base-Subtle-Background-hover` | #ECEDF0 | Light hover bg |
+
+**Design System Principles Reinforced**:
+
+1. **✅ Use Actual Figma Tokens**: Don't create custom variables when proper tokens exist
+2. **✅ Direct Token Mapping**: Map tokens directly to their intended use cases
+3. **✅ Design-Code Alignment**: Ensure Storybook perfectly matches Figma specifications
+4. **✅ Token Consistency**: Use same naming convention across all components
+
+**User Validation**:
+> "is thereb a way to fix the button problem without creating new css variables that don't align with figma. Shouldn't it work out using the variables used in figma in storybook as well?"
+
+User correctly identified that custom variables were against design system principles and insisted on using proper Figma tokens.
+
+**Verification**:
+```bash
+# Test fixed implementation
+npm run storybook
+# Navigate to Button > Visual Regression Matrix
+# Verify base buttons match Figma design exactly
+
+# Check visual testing
+npm run build-storybook
+npx chromatic --project-token=<token> # (when configured)
+```
+
+**Benefits of Proper Implementation**:
+- **🎯 Design System Alignment**: Uses actual Figma tokens, not custom ones
+- **🔄 Automatic Updates**: Components automatically stay in sync with Figma changes  
+- **📏 Consistency**: Same token naming across all components
+- **🔍 Visual Accuracy**: Perfect match to Figma design specifications
+- **🚀 Maintainability**: Fewer variables to manage and maintain
+
+**Prevention**:
+- **Design Token First**: Always check existing Figma tokens before creating custom ones
+- **Visual Testing**: Automated visual regression testing catches design mismatches
+- **Code Review**: Verify token usage aligns with design system principles
+- **Figma Reference**: Compare components against Figma designs during development
+
+**Related Issues**: ADR-011 (Button Component), #012 (Button Height Consistency), Visual Testing Setup
+
+---
+
+### Related Documentation
+- [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md)  
+- [Visual Testing Setup Guide](./visual-testing-setup.md)
 - [Architecture Decision Records](./architecture-decisions.md) - ADR-003: Icon Rendering Strategy
 - [Issue #011: Icons Not Rendering](./troubleshooting-guide.md#issue-011)
 

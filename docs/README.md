@@ -597,3 +597,12 @@ npm run test:coverage
 - 🔄 Additional semantic components
 - 🔄 Enhanced accessibility features
 - 🔄 Performance optimizations 
+
+## 📚 **Documentation Index**
+
+### **For Developers**
+- [**Component Development Guide**](./component-development-guide.md) - **Complete AI agent context for new components** 🤖
+- [**AI Agent Prompt Template**](./ai-agent-prompt-template.md) - **Quick copy/paste prompts** 📋
+- [Setup Guide](../SETUP.md) - Initial project setup
+- [Figma to Component Workflow](./figma-to-component-workflow.md) - Design-to-code process
+- [CSS Variable Usage Guide](./CSS_Variable_Usage_Guide.md) - Token implementation 
