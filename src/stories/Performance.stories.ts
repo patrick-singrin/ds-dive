@@ -221,7 +221,7 @@ export const MemoryUsage: Story = {
   render: () => {
     const componentCounts = [10, 50, 100, 200];
     let memoryBefore = 0;
-    let memoryAfter = 0;
+    const memoryAfter = 0;
     
     // Basic memory measurement (if available)
     if ('memory' in performance && (performance as any).memory) {

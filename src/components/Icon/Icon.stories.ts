@@ -347,7 +347,7 @@ export const AccessibilityPatterns: Story = {
 export const PerformanceTest: Story = {
   render: () => {
     let renderTime = 0;
-    let iconCount = 100;
+    const iconCount = 100;
     
     const startTime = performance.now();
     

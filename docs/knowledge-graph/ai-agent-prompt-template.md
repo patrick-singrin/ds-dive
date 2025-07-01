@@ -1,22 +1,23 @@
 # 🤖 AI Agent Prompt Template - Quick Copy/Paste
 
+
 ## Core Development Principles
 
 **Always follow these principles when developing components:**
 
-1. **Component Reuse Over Duplication**: Before implementing any functionality, check if existing components can be reused. For example, use `<dive-icon>` for icons rather than duplicating SVG logic.
+1. **🎯 Figma Design Accuracy FIRST**: Analyze Figma component data before any implementation. Use exact values from Figma (padding, colors, layout) rather than forcing design system patterns.
 
-2. **Figma Design Token Alignment**: Use actual Figma design tokens directly, never create custom CSS variables that don't align with the design system.
+2. **Component Reuse Over Duplication**: Reuse existing components (e.g., `<dive-icon>`) for functionality, but adapt their usage to match Figma structure exactly.
 
-3. **Cross-Component Consistency**: New components should follow exact same patterns as existing components. IconButton should match Button behavior exactly.
+3. **Exact Figma Values Over Tokens**: Use precise Figma measurements and colors first. Design tokens are fallbacks when Figma values aren't available.
 
-4. **Correct Token Categories**: 
-   - Filled variants: Use `Primary-Background` tokens
-   - Outline/ghost variants: Use `Subtle-Background` tokens on hover (NEVER primary backgrounds)
+4. **Structure Follows Design**: If Figma shows two icons, implement two icon properties. If Figma shows specific padding `8px 16px 12px`, use exactly that - not generic tokens.
 
-5. **Comprehensive Testing**: Implement both unit tests and visual regression tests for all components.
+5. **Pattern Adaptation Over Enforcement**: Adapt existing patterns to match Figma designs, don't force designs to match existing patterns.
 
-6. **Accessibility First**: Ensure proper ARIA labels, focus management, and keyboard navigation.
+6. **Comprehensive Testing**: Implement both unit tests and visual regression tests for all components.
+
+7. **Accessibility First**: Ensure proper ARIA labels, focus management, and keyboard navigation.
 
 **💡 Pro Tip:** Always reference `docs/component-development-guide.md` for complete context and patterns!
 
@@ -29,20 +30,32 @@
 ```
 I'm developing a new [COMPONENT_NAME] component for the Dive Design System based on this Figma design: [FIGMA_URL]
 
-Please follow the complete Component Development Guide (docs/component-development-guide.md) and ensure:
-1. Use actual Figma design tokens (no custom variables)
-2. Reuse existing components (e.g., <dive-icon>) instead of duplicating functionality
-3. Create comprehensive Storybook stories including VisualRegressionMatrix
-4. Follow Button component patterns for consistency  
-5. Add proper documentation to troubleshooting guide
-6. Include accessibility features and multi-mode visual testing
+🚨 CRITICAL FIRST STEP: Analyze Figma data BEFORE any implementation:
+1. 📊 Fetch exact Figma component data using mcp_Framelink_Figma_MCP_get_figma_data
+2. 🔍 Document EXACT structure: icon count, layout, padding, colors, text properties
+3. 📝 Note any deviations from standard patterns (two icons vs one, specific padding, etc.)
+
+THEN implement following these priorities:
+1. ✅ Match Figma structure 100% (exact padding, icon layout, colors)
+2. ✅ Reuse existing components (e.g., <dive-icon>) for functionality
+3. ✅ Use Figma exact values FIRST, design tokens as fallbacks only
+4. ✅ Create comprehensive Storybook stories including VisualRegressionMatrix
+5. ✅ Adapt existing patterns to match Figma (don't force patterns onto design)
+6. ✅ Include accessibility features and multi-mode visual testing
 
 Context: This is a LitElement + TypeScript + Storybook design system with automated visual testing via Chromatic.
 
+⚠️ VALIDATION REQUIRED:
+- [ ] Icon count/placement matches Figma exactly
+- [ ] Padding values are pixel-perfect from Figma data
+- [ ] Colors use exact hex values from Figma
+- [ ] Layout structure matches Figma children order
+- [ ] Text properties match Figma text styles
+
 Key reference files:
-- Component patterns: src/components/Button/Button.ts
+- Component patterns: src/components/Button/Button.ts (adapt to Figma, don't copy)
 - Existing components: src/components/Icon/Icon.ts
-- Design tokens: src/tokens/css-vars/dive-theme/component.css
+- Design tokens: src/tokens/css-vars/dive-theme/component.css (fallback only)
 - Story patterns: src/components/Button/Button.stories.ts
 - Documentation: docs/troubleshooting-guide.md
 ```
