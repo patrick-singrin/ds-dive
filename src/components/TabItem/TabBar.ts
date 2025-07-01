@@ -13,7 +13,7 @@ import { DiveTabItem } from './TabItem.js';
  *
  * @example
  * ```html
- * <dive-tab-bar orientation="horizontal" type="pill" color="base">
+ * <dive-tab-bar orientation="horizontal" type="line" color="base">
  *   <dive-tab-item text="Tab 1" selected></dive-tab-item>
  *   <dive-tab-item text="Tab 2"></dive-tab-item>
  *   <dive-tab-item text="Tab 3"></dive-tab-item>
@@ -105,7 +105,7 @@ export class DiveTabBar extends LitElement {
    */
   // @ts-ignore
   @property({ type: String, reflect: true })
-  type: 'ghost' | 'line' | 'pill' = 'ghost';
+  type: 'ghost' | 'line' | 'pill' = 'line';
 
   /**
    * Color scheme for the tab bar

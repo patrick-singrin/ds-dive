@@ -173,9 +173,9 @@ export const HorizontalNavigation: Story = {
   render: (args) => html`
     <div style="display: flex; flex-direction: column; gap: 2rem;">
       <div>
-        <h3>Ghost Style</h3>
-        <!-- ✨ Child TabItems automatically inherit: orientation="horizontal" type="ghost" color="base" -->
-        <dive-tab-bar orientation="horizontal" type="ghost" color="base">
+                  <h3>Line Style</h3>
+        <!-- ✨ Child TabItems automatically inherit: orientation="horizontal" type="line" color="base" -->
+<dive-tab-bar orientation="horizontal" type="line" color="base">
           <dive-tab-item text="Overview" selected left-icon="home" show-left-icon></dive-tab-item>
           <dive-tab-item text="Analytics" left-icon="chart" show-left-icon></dive-tab-item>
           <dive-tab-item text="Reports" left-icon="document" show-left-icon></dive-tab-item>
@@ -225,9 +225,9 @@ export const VerticalNavigation: Story = {
   render: (args) => html`
     <div style="display: flex; gap: 3rem; align-items: flex-start;">
       <div>
-        <h3>Vertical Ghost</h3>
-        <!-- ✨ Child TabItems automatically inherit: orientation="vertical" type="ghost" color="primary" -->
-        <dive-tab-bar orientation="vertical" type="ghost" color="primary">
+                  <h3>Vertical Line</h3>
+        <!-- ✨ Child TabItems automatically inherit: orientation="vertical" type="line" color="primary" -->
+<dive-tab-bar orientation="vertical" type="line" color="primary">
           <dive-tab-item text="Inbox" selected left-icon="inbox" show-left-icon right-icon="chevron-right" show-right-icon></dive-tab-item>
           <dive-tab-item text="Sent" left-icon="send" show-left-icon right-icon="chevron-right" show-right-icon></dive-tab-item>
           <dive-tab-item text="Draft" left-icon="edit" show-left-icon right-icon="chevron-right" show-right-icon></dive-tab-item>
@@ -272,7 +272,7 @@ export const InteractiveTabBar: Story = {
   render: TabBarTemplate,
   args: {
     orientation: 'horizontal',
-    type: 'ghost',
+    type: 'line',
     color: 'base',
     showIcons: true,
     ariaLabel: 'Main navigation'
@@ -318,19 +318,19 @@ export const VisualRegressionMatrix: Story = {
       <div>
         <h2>Horizontal TabBars</h2>
         <div style="display: grid; gap: 2rem;">
-          <!-- Ghost Types -->
+          <!-- Line Types (Default) -->
           <div>
-            <h3>Ghost - Base</h3>
-            <dive-tab-bar orientation="horizontal" type="ghost" color="base">
-              <dive-tab-item text="Tab 1" selected left-icon="home" show-left-icon></dive-tab-item>
-              <dive-tab-item text="Tab 2" left-icon="search" show-left-icon></dive-tab-item>
-              <dive-tab-item text="Tab 3" left-icon="user" show-left-icon disabled></dive-tab-item>
-            </dive-tab-bar>
+            <h3>Line - Base (Default)</h3>
+            <dive-tab-bar orientation="horizontal" type="line" color="base">
+<dive-tab-item text="Tab 1" selected left-icon="home" show-left-icon></dive-tab-item>
+<dive-tab-item text="Tab 2" left-icon="search" show-left-icon></dive-tab-item>
+<dive-tab-item text="Tab 3" left-icon="user" show-left-icon disabled></dive-tab-item>
+</dive-tab-bar>
           </div>
 
           <div>
-            <h3>Ghost - Primary</h3>
-            <dive-tab-bar orientation="horizontal" type="ghost" color="primary">
+                          <h3>Line - Primary</h3>
+            <dive-tab-bar orientation="horizontal" type="line" color="primary">
               <dive-tab-item text="Tab 1" selected left-icon="home" show-left-icon></dive-tab-item>
               <dive-tab-item text="Tab 2" left-icon="search" show-left-icon></dive-tab-item>
               <dive-tab-item text="Tab 3" left-icon="user" show-left-icon disabled></dive-tab-item>
@@ -373,8 +373,8 @@ export const VisualRegressionMatrix: Story = {
         <h2>Vertical TabBars</h2>
         <div style="display: flex; gap: 2rem; align-items: flex-start;">
           <div>
-            <h3>Ghost - Base</h3>
-            <dive-tab-bar orientation="vertical" type="ghost" color="base">
+            <h3>Line - Base (Default)</h3>
+            <dive-tab-bar orientation="vertical" type="line" color="base">
               <dive-tab-item text="Tab 1" selected left-icon="inbox" show-left-icon right-icon="chevron-right" show-right-icon></dive-tab-item>
               <dive-tab-item text="Tab 2" left-icon="send" show-left-icon right-icon="chevron-right" show-right-icon></dive-tab-item>
               <dive-tab-item text="Tab 3" left-icon="edit" show-left-icon right-icon="chevron-right" show-right-icon disabled></dive-tab-item>
@@ -405,10 +405,10 @@ export const VisualRegressionMatrix: Story = {
       <div>
         <h2>Individual TabItem States</h2>
         <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-          <dive-tab-item text="Default" type="ghost" color="base"></dive-tab-item>
-          <dive-tab-item text="Selected" type="ghost" color="base" selected></dive-tab-item>
-          <dive-tab-item text="Disabled" type="ghost" color="base" disabled></dive-tab-item>
-          <dive-tab-item text="With Icons" type="ghost" color="base" left-icon="star" show-left-icon right-icon="chevron-down" show-right-icon></dive-tab-item>
+          <dive-tab-item text="Default" type="line" color="base"></dive-tab-item>
+<dive-tab-item text="Selected" type="line" color="base" selected></dive-tab-item>
+<dive-tab-item text="Disabled" type="line" color="base" disabled></dive-tab-item>
+<dive-tab-item text="With Icons" type="line" color="base" left-icon="star" show-left-icon right-icon="chevron-down" show-right-icon></dive-tab-item>
         </div>
       </div>
     </div>
@@ -448,7 +448,7 @@ export const AccessibilityDemo: Story = {
       <div>
         <h3>Keyboard Navigation</h3>
         <p>Use <kbd>Tab</kbd> to focus, <kbd>Space</kbd> or <kbd>Enter</kbd> to select tabs.</p>
-        <dive-tab-bar aria-label="Settings sections" orientation="vertical" type="ghost" color="base">
+        <dive-tab-bar aria-label="Settings sections" orientation="vertical" type="line" color="base">
           <dive-tab-item text="General" selected left-icon="settings" show-left-icon aria-label="General settings"></dive-tab-item>
           <dive-tab-item text="Privacy" left-icon="shield" show-left-icon aria-label="Privacy settings"></dive-tab-item>
           <dive-tab-item text="Account" left-icon="user" show-left-icon aria-label="Account settings"></dive-tab-item>
